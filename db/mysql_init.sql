@@ -445,20 +445,9 @@ CREATE TABLE `user` (
 
 /*Data for the table `user` */
 
-/*Table structure for table `tpb_user_domain` */
-
-DROP TABLE IF EXISTS `tpb_user_domain`;
-
-CREATE TABLE tpb_user_domain ( id int(6) PRIMARY KEY AUTO_INCREMENT NOT NULL, 
-  `user_id` int(11) NOT NULL,
-  `domain` varchar(200) NOT NULL, 
-  UNIQUE KEY `tpb_user_domain_idx_user_id` (`user_id`), 
-  CONSTRAINT `tpb_user_domain_fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION 
-);
+/*Table structure for table `user_photo` */
 
 DROP TABLE IF EXISTS `user_photo`;
-
-/*Table structure for table `user` */
 
 CREATE TABLE `user_photo` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

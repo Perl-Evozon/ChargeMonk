@@ -128,13 +128,13 @@ $(document).ready( function () {
         var $form_inputs = $('#register-form input'),
             $target = $(e.target);
         e.preventDefault();
-        window.location = 'http://subscriptions.thepearlbee.com/register.html?sid=' + $target.val();
+        window.location = 'https://www.chargemonk.dev/register.html?sid=' + $target.val();
     });
     $('.bottom').unbind('click').on('click','[data-action="register_trial"]', function(e){
         var $form_inputs = $('#register-form input'),
             $target = $(e.target);
         e.preventDefault();
-        window.location = 'http://subscriptions.thepearlbee.com/register.html?sid=' + $target.val() + "&trial=1";
+        window.location = 'https://www.chargemonk.dev/register.html?sid=' + $target.val() + "&trial=1";
     });
     function generate_alert( alert_type, alert_text ) {
         $(".alert").remove();

@@ -7,7 +7,6 @@ use Try::Tiny;
 use JSON::XS;
 use DateTime;
 use Storable qw( dclone );
-use LWP::UserAgent;
 
 BEGIN { extends 'Chargemonk::Controller::API::Base' }
 
@@ -90,43 +89,28 @@ sub register : Local : Public {
     my ( $self, $c ) = @_;
 
     my $existing_user = $c->model('Chargemonk::User')->search( {email => $c->req->params->{email}} )->first();
-    my $existing_domain_name = $c->model('Chargemonk::TpbUserDomain')->search( {domain => $c->req->params->{domain_name}} )->first();
-
     if ($existing_user) {
         $self->status_ok( $c, entity => {error => 'Email already exists.'} );
         $c->detach();
     }
-    if ($existing_domain_name) {
-        $self->status_ok( $c, entity => {error => 'Domain name already exists.'} );
-        $c->detach();
-    }
-
     my $subscription = $c->model('Chargemonk::Subscription')->find( {id => $c->req->params->{sid}} );
     my @features = $c->model('Chargemonk::LinkSubscriptionFeature')->search( {subscription_id => $subscription->id} )->all;
 
     my @cols = qw(
-        id email password firstname lastname address address2 country state zip_code phone gender
+        email password firstname lastname address address2 country state zip_code phone gender
         company_name company_address company_country company_zip_code company_phone
     );
 
     my $user_hash;
     map { $user_hash->{$_} = $c->req->params->{$_} || undef } @cols;
-    $user_hash->{user_type} = 'LEAD';
+    $user_hash->{type} = 'LEAD';
 
     my $user_rs;
     eval { $user_rs = $c->model('Chargemonk::User')->create($user_hash); };
     if ($@) {
         $self->status_ok( $c, entity => {error => 'Could not register user. Please try again later'} );
-        $c->logger->error($@);
         $c->detach();
     }
-
-    $c->model('SubMan::TpbUserDomain')->create(
-        {   user_id => $user_rs->id,
-            domain  => $c->req->params->{domain_name}
-        }
-    );
-
     my $active_from_date = DateTime->now();
     my $date_object      = dclone($active_from_date);
     my $active_to_date =
@@ -147,7 +131,6 @@ sub register : Local : Public {
         $code->update( {user_id => $user_rs->id, redeem_date => DateTime->now()} );
     }
 
-
     Chargemonk::Helpers::Visitor::Registration::send_register_user_email(
         {   c                         => $c,
             user_id                   => $user_rs->id,
@@ -161,7 +144,7 @@ sub register : Local : Public {
     
     $self->status_ok( $c,
         entity =>
-            {success => 'Details completed successfuly'}
+            {success => 'Details completed successfuly. Please verify your email to complete the registration process'}
     );
 
     $c->detach();
@@ -176,7 +159,7 @@ sub register : Local : Public {
 
 sub payment : Local : Public {
     my ( $self, $c ) = @_;
-
+    
     return unless $c->req->params;
     my @alerts = ();
 
@@ -191,24 +174,21 @@ sub payment : Local : Public {
         $gateway = 'Chargemonk::Helpers::Gateways::' . ucfirst($gateway);
         my $active_gateway = $gateway->new(
             args => {
-                c                         => $c,
-                gateway_credentials       => $gateway_credentials,
-                credit_card               => $c->req->params(),
-                link_user_subscription_id => $registration_token->link_user_subscription_id,
-                alerts                    => \@alerts,
-                amount                    => $amount,
+                c                          => $c,
+                gateway_credentials        => $gateway_credentials,
+                credit_card                => $c->req->params(),
+                link_user_subscription_id  => $registration_token->link_user_subscription_id,
+                alerts                     => \@alerts,
+                amount                     => $amount,
             }
         );
 
         $active_gateway->add_user_and_pay();
-
-        ( !scalar @alerts )
-            ? $self->status_ok( $c, entity => {success => "Payment completed successfully"} )
-            : $self->status_ok( $c,
-            entity => {error => "There has been an error while processing the data. Please contact support"} );
+        
+        ( !scalar @alerts ) ? $self->status_ok( $c, entity => { success => "Payment completed successfully" } )
+                            : $self->status_ok( $c, entity => { error => "There has been an error while processing the data. Please contact support" } );
         $registration_token->delete if $registration_token;
-    }
-    else {
+    } else {
         $self->status_ok( $c, entity => {'error' => 'Details have already been submitted'} );
     }
 
@@ -242,18 +222,6 @@ sub user_details : Local : Public {
     $c->detach();
 }
 
-sub check_domain : Local : Public {
-    my ( $self, $c ) = @_;
-
-    my $domain_name = $c->model('SubMan::TpbUserDomain')->search( {domain => $c->req->params->{domain_name}} )->first();
-
-    if ($domain_name) {
-        $self->status_ok( $c, entity => {error => 'Domain name not available'} );
-        $c->detach;
-    }
-    $self->status_ok( $c, entity => {success => 'Domain name available'} );
-    $c->detach();
-}
 
 =head1 AUTHOR
 

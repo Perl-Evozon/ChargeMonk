@@ -39,9 +39,9 @@
 		</div>
 
 		<div class="center">
-		  <button class="btn btn-info" type="submit"><i class="icon icon-ok"></i> Save</button>
+		  <button class="btn" type="submit"><i class="icon icon-ok"></i> Save</button>
 		    &nbsp;or&nbsp;
-		  <a href="#" onclick="goBack();">Cancel</a>
+		  <a onclick="goBack();">Cancel</a>
 	  </div>
 
 	</form>

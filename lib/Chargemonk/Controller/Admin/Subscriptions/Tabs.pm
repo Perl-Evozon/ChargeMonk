@@ -76,7 +76,7 @@ sub discount_codes : Local : Args(1) {
     }
     else {
         my $added_campaigns = ( $c->req->param('added_campaigns') || '' );
-        my @ids_in = grep { $_ ge 0 } split ',', $added_campaigns;
+        my @ids_in = ( $c->stash->{campaign_id}, grep { $_ ge 0 } split ',', $added_campaigns );
         $search_params = {id => {'IN', \@ids_in}} if ( scalar(@ids_in) );
     }
 

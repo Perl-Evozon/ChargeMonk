@@ -41,7 +41,7 @@
 	     <div class="clearfix">
 		    <button class="btn" type="submit" name="add_feature_btn" id="submit_add_feature_form"><i class="icon icon-ok"></i> Save</button>
 		    &nbsp;or&nbsp;
-		    <a href="#" onclick="goBack();">Cancel</a>
+		    <a onclick="goBack();">Cancel</a>
 	    </div>
 
     </form>

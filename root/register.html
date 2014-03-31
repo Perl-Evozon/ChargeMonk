@@ -73,19 +73,11 @@
 
 <script type="text/javascript">
 $(function(){
-<<<<<<< HEAD
-    $("#register_content").load("http://subscriptions.thepearlbee.com/api/register", {
-        sid                 : $.url().param("sid"),
-        success_page_return : "http://subscriptions.thepearlbee.com/register_success.html",
-        trial               : $.url().param("trial") ? 1 : 0,
-        email_page_return   : $.url().param("trial") ? "http://subscriptions.thepearlbee.com/index.html?registered=1" : "http://subscriptions.thepearlbee.com/complete_registration.html"
-=======
     $("#register_content").load("https://www.chargemonk.dev/api/register", {
         sid                 : $.url().param("sid"),
         success_page_return : "https://www.chargemonk.dev/register_success.html",
         trial               : $.url().param("trial") ? 1 : 0,
         email_page_return   : $.url().param("trial") ? "https://www.chargemonk.dev/index.html?registered=1" : "https://www.chargemonk.dev/complete_registration.html"
->>>>>>> master
     });
 });
 </script>

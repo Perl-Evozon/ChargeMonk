@@ -80,7 +80,7 @@
 			<div class="center">
 			 <button class="btn" type="submit" name="downgrade" value="save"><i class="icon icon-ok"></i> Next</button>
 			 &nbsp;or&nbsp;
-			 <a href="#" onclick="goBack();">Cancel</a>
+			 <a onclick="goBack();">Cancel</a>
 		 </div>
 
   </form>

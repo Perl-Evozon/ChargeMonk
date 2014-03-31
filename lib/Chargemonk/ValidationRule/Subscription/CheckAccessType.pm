@@ -41,31 +41,31 @@ sub validate_scalar {
         my $checked_params = {
             period => sub {
                 foreach ( 'period', 'period_unit', 'price', 'currency', 'call_to_action' ) {
-                    return 0 if( $param_name eq $_ && $value eq '' );
+                    return 0 if( $param_name eq $_ && !$value );
                 }            
                 return 1;
             },
             period_users => sub {
                 foreach ( 'period', 'period_unit', 'price', 'currency', 'call_to_action', 'min_active_period_users', 'max_active_period_users' ) {
-                    return 0 if( $param_name eq $_ && $value eq '' );
+                    return 0 if( $param_name eq $_ && !$value );
                 }            
                 return 1;
             },
             resources => sub {
                 foreach ( 'period', 'period_unit', 'price', 'currency', 'call_to_action', 'resource_type', 'min_resource_quantity', 'max_resource_quantity' ) {
-                    return 0 if( $param_name eq $_ && $value eq '' );
+                    return 0 if( $param_name eq $_ && !$value );
                 }            
                 return 1;
             },
             IP_range => sub {
                 foreach ( 'period', 'period_unit', 'price', 'currency', 'call_to_action', 'min_active_ips', 'max_active_ips' ) {
-                    return 0 if( $param_name eq $_ && $value eq '' );
+                    return 0 if( $param_name eq $_ && !$value );
                 }            
                 return 1;
             },
             API_calls => sub {
                 foreach ( 'period', 'period_unit', 'price', 'currency', 'call_to_action', 'api_calls_volume' ) {
-                    return 0 if( $param_name eq $_ && $value eq '' );
+                    return 0 if( $param_name eq $_ && !$value );
                 }            
                 return 1;
             }

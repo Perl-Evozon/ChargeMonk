@@ -22,7 +22,6 @@ __PACKAGE__->add_columns(
     firstname        => {data_type => "varchar", is_nullable    => 1, size        => 100},
     lastname         => {data_type => "varchar", is_nullable    => 1, size        => 100},
     email            => {data_type => "varchar", is_nullable    => 0, size        => 50},
-    #domain           => {data_type => "varchar", is_nullable    => 1, size        => 100},
     address          => {data_type => "varchar", is_nullable    => 1, size        => 200},
     address2         => {data_type => "varchar", is_nullable    => 1, size        => 200},
     country          => {data_type => "varchar", is_nullable    => 1, size        => 50},

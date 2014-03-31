@@ -26,7 +26,7 @@
         <h1 class="step-name">
             [% subscription.subscription_group.name %] [% subscription.name %] Subscription
             [% IF trial %]Trial[% END %]
-            <sup><a href="/pricing.html">(change)</a></sup>
+            <sup><a href="/pricing">(change)</a></sup>
         </h1>
         <div class="register-steps cf">
             <div class="step active">
@@ -53,7 +53,7 @@
         </div>
         <div class="form-row" id="domain">
             <label for="domain">Domain:</label>
-            <input type="text" id="domain_check" name="domain" style="width:168px; margin-top: 9px"/><span class="btn orange" id="default_domain" disabled><i>.thepearlbee.com</i></span>
+            <div class="btn orange" disabled><i>thepearlbee.</i></div><input type="text" name="domain" style="width:197px; margin-top: 9px"/>
         </div>
         [% IF required_data.first_name %]
         <div class="form-row" id="firstname">
@@ -207,42 +207,6 @@
 <script type="text/javascript">
 $(function() {
     var $form_inputs = $('#register-form input');
-    
-    $('#domain_check').on('keyup', function(e) {
-        e.preventDefault();
-        $('.checking_domain').remove();
-        var images = {
-            loader  : "/static/img/domain-load.gif",
-            error   : "/static/img/error_image.png",
-            success : "/static/img/tick_success.png"
-        };
-        
-        if ( !/^[a-z0-9]*$/g.test($('#domain_check').val()) ) {
-            $('.checking_domain').remove();
-            generate_domain_message( 'error', 'Domain name can not contain special characters', images.error );
-            return false;
-        }
-        if ( $('#domain_check').val().length > 0 ) {
-            generate_domain_message( 'loading', 'Looking up domain availability', images.loader );
-            $.ajax({
-                url : '/api/subscriptions/check_domain',
-                async : false,
-                dataType : 'json',
-                data : { domain_name : $('#domain_check').val() },
-                success : function(response, jqXHR, responseText) {
-                    if ( response.error ) {
-                        generate_domain_message('error', response.error, images.error);
-                    } else {
-                        generate_domain_message('success', response.success, images.success);
-                    }
-                },
-                error : function(response, jqXHR, responseText) {
-                    console.log(response);
-                }
-            });
-        }
-        });
-    
     $('#continue_registration').unbind('click').on('click', function(ev) {
         ev.preventDefault();
         var errors = false;
@@ -279,11 +243,6 @@ $(function() {
         $(modal_alert).insertBefore('#register-form');
     
         return true;
-    }
-    function generate_domain_message( type, text, image ) {
-        $('.checking_domain').remove();
-        var text_color = ( type === 'error' ) ? 'red;' : 'green;';
-        $('<div class="checking_domain" style="margin-top:15px; padding-left:120px;color:' + text_color +'"><img src="'+ image +'" /><small>'+ text +'</small></div>').insertAfter('#domain');
     }
 });
 </script>

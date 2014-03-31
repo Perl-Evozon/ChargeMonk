@@ -1,14 +1,5 @@
 #!/bin/bash
  
-<<<<<<< HEAD
-# subman - this script starts and stops the subman daemon
-#
-# chkconfig:   - 85 15
-# description: Subman 
-# processname: subman
-# pidfile :    /var/run/starman.pid
-# www file:    /opt/subman
-=======
 # chargemonk - this script starts and stops the chargemonk daemon
 #
 # chkconfig:   - 85 15
@@ -16,7 +7,6 @@
 # processname: chargemonk
 # pidfile :    /var/run/starman.pid
 # www file:    /opt/chargemonk
->>>>>>> master
  
  
 # Source function library.
@@ -25,15 +15,9 @@
  
 export plackup="/usr/local/bin/plackup"
 export starman="/usr/local/bin/starman"
-<<<<<<< HEAD
-export myapp="subman"
-export myapp_path="/opt/subman"
-export pidfile="/var/run/subman.pid"
-=======
 export myapp="chargemonk"
 export myapp_path="/opt/chargemonk"
 export pidfile="/var/run/chargemonk.pid"
->>>>>>> master
 export app_port="3000"
  
 start() {
