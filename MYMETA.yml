@@ -1,0 +1,71 @@
+---
+abstract: 'Catalyst based application'
+author:
+  - natasha
+build_requires:
+  ExtUtils::MakeMaker: 6.36
+  Test::More: 0.88
+configure_requires:
+  ExtUtils::MakeMaker: 6.36
+dynamic_config: 0
+generated_by: 'Module::Install version 1.06, CPAN::Meta::Converter version 2.132830'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: SubMan
+no_index:
+  directory:
+    - inc
+    - t
+requires:
+  Business::AuthorizeNet::CIM: 0
+  Business::Stripe: 0
+  Catalyst::Action::RenderView: 0
+  Catalyst::Authentication::Store::DBIx::Class: 0
+  Catalyst::Controller::REST: 0
+  Catalyst::Devel: 0
+  Catalyst::Plugin::Authentication: 0
+  Catalyst::Plugin::ConfigLoader: 0
+  Catalyst::Plugin::Log::Handler: 0
+  Catalyst::Plugin::Session::State::Cookie: 0
+  Catalyst::Plugin::Session::Store::File: 0
+  Catalyst::Plugin::Static::Simple: 0
+  Catalyst::Restarter: 0
+  Catalyst::Runtime: 5.90019
+  Catalyst::ScriptRunner: 0
+  Catalyst::View::JSON: 0
+  Catalyst::View::TT: 0
+  Config::General: 0
+  DBD::Pg: 0
+  DBIx::Class: 0
+  DBIx::Class::PassphraseColumn: 0
+  Date::Calc: 0
+  DateTime: 0
+  DateTime::Format::MySQL: 0
+  DateTime::Format::Pg: 0
+  Imager: 0
+  JSON: 0
+  JSON::XS: 0
+  LWP::Protocol::https: 0
+  Log::Log4perl: 0
+  MIME::Base64: 0
+  Mail::Sendmail: 0
+  Moose: 0
+  MooseX::MarkAsMethods: 0
+  MooseX::NonMoose: 0
+  Net::Braintree: 0
+  Net::IP: 0
+  SQL::Translator: 0
+  String::Random: 0
+  Template: 0
+  Template::Plugin::Number::Format: 0
+  Term::ReadKey: 0
+  Test::HTML::Form: 0
+  Test::WWW::Mechanize::Catalyst: 0
+  Try::Tiny: 0
+  YAML::Tiny: 0
+  namespace::autoclean: 0
+resources:
+  license: http://dev.perl.org/licenses/
+version: 0.04

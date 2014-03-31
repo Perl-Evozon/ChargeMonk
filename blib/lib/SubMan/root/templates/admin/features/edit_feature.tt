@@ -1,0 +1,48 @@
+[% WRAPPER layouts/admin.tt %]
+
+<div id="content-header">
+	<h1>
+		Edit feature
+	</h1>
+</div>
+
+[% INCLUDE include/common/alerts.tt %]
+
+<div class="container-fluid">
+	 <form method="post" action="#" name="add_feature_form" id="add_feature_form" enctype="multipart/form-data">
+	 	 <div class="control-group">
+	 	 	<table>
+	 	 		<tr>
+	 	 			<td>
+	 	 				<label class="control-label">Feature name: </label>
+                        <div class="controls">
+                            <input type="text" id="name" name="name" maxlength="50" value="[% feature.name %]" required/> 50 characters max
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+	 	 				<label class="control-label">Feature description:
+	 	 					<a href="#" data-toggle="tooltip" title="Feature description">
+	 	 						<i class="icon-grey icon-question-sign tip-bottom" data-original-title="Write a short description about the new feature."></i>
+	 	 					</a>
+	 	 				</label>
+                        <div class="controls">
+                            <textarea class="textarea-non-resizable" cols="100" rows="10" id="description" name="description" maxlength="250" required>[% feature.description %]</textarea> 250 characters max
+                        </div>
+                    </td>
+	 	 		</tr>
+	 	 	</table>
+	 	 </div>
+
+
+	     <div class="center">
+		    <button class="btn" type="submit" id="submit_add_user_form"><i class="icon icon-ok"></i> Save</button>
+		    &nbsp;or&nbsp;
+		    <a onclick="goBack();">Cancel</a>
+	    </div>
+
+    </form>
+</div>
+
+[% END %]

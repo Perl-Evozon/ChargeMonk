@@ -1,0 +1,20 @@
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal">×</button>
+          <h3>Edit Gateway</h3>
+        </div>
+         [% INCLUDE include/common/alerts.tt %]
+        <div class="modal-body" style="width:450px;">
+					[% FOREACH credential IN  credentials %]
+          	<label class="control-label"> [% credential.key %] </label>
+						<div class="controls">
+							<input type="text"  maxlength="40" name="[% credential.key %]" value =[% credential.value %] style="width:50%">
+						</div>
+          [% END %]
+          <input type="hidden" name="name" value =[%gateway_name%]>
+        </div>
+        <div class="modal-footer">
+          <input class="btn btn-primary" id="button" type="button" value="Save" onclick="gateway_edit('[%gateway_name%]');"/>
+          <a class="modal-close btn" data-dismiss="modal" href="%23">Cancel</a>
+        </div>
+      </div>

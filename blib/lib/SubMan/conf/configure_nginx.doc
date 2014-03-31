@@ -1,0 +1,19 @@
+Step 1:
+- vim /etc/apt/sources.list
+	Add:
+	deb http://nginx.org/packages/debian/ squeeze nginx
+	deb-src http://nginx.org/packages/debian/ squeeze nginx
+
+Step 2:
+apt-get install nginx
+
+Step 3:
+cp /projects/subman/ssl/* /usr/local/nginx/ssl/
+cp /projects/subman/conf/nginx_subman.conf /etc/nginx/site-enabled/
+
+* Should the certificates not work, generate new ones by following these instructions: http://www.akadia.com/services/ssh_test_certificate.html
+
+!!!!
+my $world = s/war/peace/g
+ 
+

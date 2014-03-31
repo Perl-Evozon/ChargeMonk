@@ -1,0 +1,56 @@
+[% WRAPPER $wrapper %]
+
+	[% user.gender == 'M' ? 'checked="true"' : '' %]
+[% USE date(format = '%B %d, %Y') %]
+
+<div id="content-header">
+	<h1>
+		Renew Subscription Detailsss
+	</h1>
+</div>
+
+[% INCLUDE include/common/alerts.tt %]
+
+
+<div class="container-fluid">
+	<form method="post" action="/common/subscriptionactions/renew_save/[% c.request.arguments.0 %]/[% c.request.arguments.1 %]">
+	 	 <div class="control-group">
+	 	 	<table id="upgrade_table" class="table">
+				<tr>
+					<td>
+						<b>New subscription</b>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="user_info">
+							<label> Name: </label>
+							<label> [% new_subscription_name %] </label>
+						</div>
+						<div class="user_info">
+							<label> Start Date: </label>
+							<label> [% date.format(new_subscription_start_date) %] </label>
+						</div>
+						<div class="user_info">
+							<label> End Date: </label>
+							<label> [% date.format(new_subscription_end_date) %] </label>
+						</div>
+						<div class="user_info">
+							<label> Price: </label>
+							<label> [% new_subscription_price %] </label>
+						</div>
+					</td>
+				</tr>
+	 	 	</table>
+	 	 </div>
+			<div class="center">
+			 <button class="btn" type="submit" name="upgrade" value="save"><i class="icon icon-ok"></i> Next</button>
+			 &nbsp;or&nbsp;
+			 <a onclick="goBack();">Cancel</a>
+		 </div>
+
+  </form>
+</div>
+
+[% END %]
+

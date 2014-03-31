@@ -1,0 +1,122 @@
+[% WRAPPER layouts/admin.tt %]
+<script type="text/javascript" src="/static/js/modal-responsive-fix.js"></script>
+<script type="text/javascript" src="/static/js/touchscroll.js"></script>
+
+<div id="content-header">
+	<h1>Payment Gateways</h1>
+</div>
+
+<hr>
+
+[% INCLUDE include/common/alerts.tt %]
+
+<div class="clearfix">
+	<form method="post" name="change_gateway" id="change_gateway">
+		<div class="panel-group" id="accordion">
+			[% FOREACH gateway IN  data.gateways.keys.sort %]
+			<div class="panel panel-default">
+				<div class="panel-heading cf">
+					<h3 class="payment-title">
+						<input type="checkbox" name="selected_gateway" class="toggle-checkboxes" value="[% gateway.replace('\W+', '_') %]" [% gateway== data.default ? 'checked="true"' : ''%] >
+						<a class="accordion-toggle" data-toggle="collapse"  style="display: inline;" data-parent="#accordion" href="#collapse_[% gateway.replace('\W+', '_') %]">	[% gateway %]	</a>
+					</h3>
+					<span class="payment-edit" style="display:inline-block; float:right; vertical-align:middle">
+						<a  class="gateway_edit" id="edit_[% gateway.replace('\W+', '_') %]" data-toggle="modal" href="#gateway_edit">	[ edit ]	</a>
+					</span>
+				</div>
+				<div id="collapse_[% gateway.replace('\W+', '_') %]" class="panel-collapse collapse [% gateway== data.default ? 'in' : ''%]">
+					<div class="panel-body">
+						[% FOREACH credentials IN  data.gateways.$gateway %]
+						<label class="control-label"> [% credentials.key %] </label>
+						<div class="controls">
+							<input type="text"  maxlength="40" name="[% credentials.key %]" disabled="true" value =[% credentials.value %] style="width:50%">
+						</div>
+						[% END %]
+					</div>
+				</div>
+			</div>
+			[% END %]
+		</div>
+
+		<div class="center">
+		  <button class="btn" type="submit"><i class="icon icon-ok"></i> Save</button>
+		    &nbsp;or&nbsp;
+		  <a onclick="goBack();">Cancel</a>
+	  </div>
+
+	</form>
+</div>
+
+<form action="/admin/gateway/edit" class="validated" id="gateway_edit_form" method="post">
+      <div class="modal fade"  id="gateway_edit" tabindex="-1" role="dialog" aria-labelledby="Edit gateway" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal">×</button>
+            <h3>Edit Gateway</h3>
+          </div>
+          <div class="modal-body">
+          </div>
+          <div class="modal-footer">
+            <input class="btn btn-primary" id="button" type="button" value="Save" onclick="gateway_edit();"/>
+            <a class="modal-close btn" data-dismiss="modal" href="%23">Cancel</a>
+          </div>
+        </div>
+      </div>
+    </form>
+
+<script type="text/javascript">
+	$(document).ready(function (){
+			$('.toggle-checkboxes').click(function(){
+				$('.toggle-checkboxes').prop("checked", false);
+				$(this).prop("checked", true);
+			});
+
+			$('.modal').modalResponsiveFix();
+      $('.modal').touchScroll();
+      $('.pop').hover(function(){
+        $(this).popover('show');
+      },function(){
+        $(this).popover('hide');
+      });
+
+			$('.gateway_edit').click(function(){
+				var id=$(this).attr("id").replace(/^edit_/,"");
+				var content_id = "collapse_"+id;
+				var gateway_edit = 'gateway_edit("'+id+'");';
+				$('.modal-body').html($("#"+content_id+" .panel-body").html());
+				$('.modal-body').append('<input type="hidden" name="name" value ='+id+'>')
+				$('#gateway_edit input').removeAttr('disabled');
+				$("#button").attr("onClick",gateway_edit);
+			});
+
+			$('#gateway_edit').on('show', function(e) {
+          $('.alert').hide();
+      });
+
+	});
+
+	function gateway_edit(gateway_name) {
+		var form=$('#gateway_edit_form');
+		$.ajax({
+			type:'POST',
+			url: form.attr('action'),
+			data: form.serialize(),
+			success: function(response) {
+				$("#gateway_edit").html(response);
+				$('#collapse_' + gateway_name + ' .panel-body').html('');
+				$('#gateway_edit .modal-body').children().each(function() {
+					if ( ! $(this).is('[type="hidden"]')) {
+						clone = $(this).clone();
+						clone.find('input').attr('disabled','true');
+						$('#collapse_' + gateway_name + ' .panel-body').append(clone);
+					}
+				});
+				return;
+			}
+		});
+    return false;
+	}
+</script>
+
+
+[% END %]

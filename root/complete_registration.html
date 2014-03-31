@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+    <title>Chargemonk</title>
+    <base href="" />
+    <meta charset="utf-8"/>
+    <meta name="description" content=""/>
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" href="/static/css/bootstrap.css" rel="stylesheet" />
+    <link type="text/css" href="/static/css/bootstrap-responsive.css" rel="stylesheet" />
+    <link type="text/css" href="/static/css/bootstrap-overides.css" rel="stylesheet" />
+    <link type="text/css" href="/static/css/public/styles.css" rel="stylesheet" />
+    <link type="text/css" href="/static/css/bootstrap-datepicker.css" rel="stylesheet" />
+    <link type="text/css" href="/static/css/public/pricing.css" rel="stylesheet" />
+    <link type="text/css" href="/static/css/public/animated.css" rel="stylesheet" />
+
+    <link type="image/x-icon" href="/images/favicon.ico" rel="shortcut icon" />
+    
+    <!-- jQuery -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script type="text/javascript" src="/static/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/static/js/modal-responsive-fix.js"></script>
+    <script type="text/javascript" src="/static/js/formretain.js"></script>
+    <script type="text/javascript" src="/static/js/validator.js"></script>
+    <script type="text/javascript" src="/static/js/touchscroll.js"></script>
+    <script type="text/javascript" src="/static/js/contactUs.js"></script>
+    <script type="text/javascript" src="/static/js/cookie/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/static/js/purl.js"></script>
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+
+</head>
+
+<body id="template-page">
+    <div class="container">
+      <div id="header" class="navbar cf">
+        <div class="header-inner cf">
+          <div class="logo"><a href="/"><img src="/static/img/logo.png"/></a></div>
+          <div class="top-nav">
+            <ul>
+              <li><a href="/pricing.html">Pricing</a></li>
+              <li><a href="/blog.html">Blog</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="main">
+      <div id="payment_form" class="container">
+      </div>
+    </div>
+    
+    <div class="container footer">
+ 
+      <div class="row">
+        <div class="socials">
+            <h3>Find us here:</h3>
+            <ul class="cf">
+              <li class="facebook"><a href="http://www.facebook.com" target="_blank">Facebook</a></li>
+              <li class="twitter"><a href="http://www.twitter.com" target="_blank">Twitter</a></li>
+              <li class="linkedin"><a href="http://www.linkedin.com" target="_blank">Linkedin</a></li>
+              <li class="google-plus"><a href="http://plus.google.com" target="_blank">Google+</a></li>
+            </ul>
+          </div>
+        <div class="footer-copy">Copyright 2014 &copy; Chargermonk</div>
+      </div>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+$(function(){
+    $("#payment_form").load("http://subscriptions.thepearlbee.com/api/payment", {
+        lusid                       : $.url().param("lusid"),
+        token                       : $.url().param("token"),
+        finish_register_page_return : 'http://subscriptions.thepearlbee.com/index.html?registered=1' 
+    });
+});
+</script>

@@ -1,0 +1,18 @@
+Installing a development environment for Chargemonk
+-----------------------------------------------
+
+1. Install Vagrant from http://www.vagrantup.com
+
+2. Create the virtual machine:
+
+    vagrant up
+
+3. Provision the virtual machine using chef-solo:
+
+    vagrant provision
+
+4. Access the virtual machine:
+
+    vagrant ssh
+
+

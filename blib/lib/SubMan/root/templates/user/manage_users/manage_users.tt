@@ -1,0 +1,78 @@
+[% WRAPPER layouts/user.tt %]
+
+<script src="/static/js/jquery.dataTables.min.js"></script>
+
+<div id="content-header">
+	<h1>
+		Manage users for <b> [% user.firstname %] [% user.lastname %] </b>
+	</h1>
+	<div>
+		<button class="btn" type="button" id="add_user_btn"><i class="icon icon-user"></i> Add user </button>
+	</div>
+</div>
+
+<hr>
+
+[% IF NOT simulate_modal AND NOT simulate_modal_edit %]
+    [% INCLUDE include/common/alerts.tt %]
+[% END %]
+
+[% INCLUDE admin/manage_users/add_user.tt %]
+
+[% INCLUDE admin/manage_users/edit_user.tt %]
+
+<div class="container-fluid">
+	<div class="widget-box">
+		<div class="widget-title">
+			<h5> [% total_period_users %] users </h5>
+		</div>
+	    <div class="widget-content nopadding">
+			<table id="results_table" class="table table-hover table-striped table-bordered data-table">
+			    <thead>
+			        <tr>
+			            <th>First name 	</th>
+			            <th>Last name 	</th>
+			            <th>Email 		</th>
+			            <th>Start date 	</th>
+			            <th>Status 		</th>
+			        </tr>
+			    </thead>
+			  	<tbody>
+			  		[% FOREACH period_user IN period_users %]
+				  		<tr>
+				  			<td> [% period_user.first_name %] 	</td>
+				  			<td> [% period_user.last_name 	%] 	</td>
+				  			<td> <a href="/admin/manage_users/[% user.id %]/[% period_user.id %]?subscription_id=[% c.req.param('subscription_id') %]"> [% period_user.email %] </a> </td>
+				  			<td> [% period_user.start_date %]	</td>
+				  			<td>
+				  				[% IF period_user.status %]
+				  					Active
+				  				[% ELSE %]
+				  					Inactive
+				  				[% END %]
+				  			</td>
+				  		</tr>
+			  		[% END %]
+			  	</tbody>
+			</table>
+		</div>
+	</div>
+
+</div>
+
+<script>
+
+$(document).ready( function () {
+    if ( [% simulate_modal || 0 %] == 1 ) {
+        $('#add_user_btn').trigger('click');
+    }
+
+    if ( [% simulate_modal_edit || 0 %] == 1 ) {
+        show_edit_modal();
+    }
+});
+
+</script>
+
+
+[% END %]

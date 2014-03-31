@@ -1,0 +1,2 @@
+INSERT INTO subscription_group(name) VALUES('Default');
+INSERT INTO registration (id, sex, first_name, last_name, date_of_birth, address, address_2, country,state, zip_code, phone_number, company_name, company_address, company_country, company_state, company_zip_code, company_phone_number) VALUES (1, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE);

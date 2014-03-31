@@ -1,0 +1,2 @@
+ALTER TABLE "public"."link_subscription_feature" DROP CONSTRAINT "link_subscription_feature_feature_id_fkey", ADD CONSTRAINT "link_subscription_feature_feature_id_fkey" FOREIGN KEY ("feature_id") REFERENCES "public"."feature" ("id") ON DELETE CASCADE;
+ALTER TABLE "public"."link_subscription_feature" DROP CONSTRAINT "link_subscription_feature_subscription_id_fkey", ADD CONSTRAINT "link_subscription_feature_subscription_id_fkey" FOREIGN KEY ("subscription_id") REFERENCES "public"."subscription" ("id") ON DELETE CASCADE;

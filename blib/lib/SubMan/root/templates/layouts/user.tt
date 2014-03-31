@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+    <head>
+        <title>Subscription Manager</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link href='//fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,400,600italic,600' rel='stylesheet' type='text/css'>
+
+        <link href="/static/css/bootstrap3.css" rel="stylesheet">
+        <link href="/static/css/datepicker.css" rel="stylesheet">
+        <link href="/static/css/select2.css" rel="stylesheet">
+        <!-- Font awesome CSS -->
+        <link href="/static/css/font-awesome.min.css" rel="stylesheet">
+        <link href="/static/css/subman.css" rel="stylesheet">
+        <link href="/static/css/style.css" rel="stylesheet">
+        <link href="/static/css/custom.css" rel="stylesheet">
+
+        [% IF (default_theme && (default_theme.id > 1)) %]
+            <link type="text/css" href="/static/themes/[% default_theme.css_file %]" rel="stylesheet" />
+        [% END %]
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <script src="/static/js/jquery.ui.custom.js"></script>
+        <script src="/static/js/jquery.peity.min.js"></script>
+        <script src="/static/js/bootstrap3.js"></script>
+        <script src="/static/js/bootstrap-datepicker.js"></script>
+        <script src="/static/js/select2.min.js"></script>
+        <script src="/static/js/subman.js"></script>
+        <script src="/static/js/jquery.input-ip-address-control-1.0.min.js"></script>
+    </head>
+
+    <body>
+        <header class="header">
+            <div class="cf">
+                <div class="col-md-3">
+                  <!-- Logo -->
+                  <div class="logo">
+                     <h1><a href="/user/dashboard">Admin Panel</a></h1>
+                  </div>
+               </div>
+               <div class="col-md-9">
+                   <div id="user-nav" class="navbar navbar-inverse" role="banner">
+                        <div class="navbar-header">
+                            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                              <span>Options</span>
+                            </button>
+                        </div>
+                        <nav class="collapse navbar-collapse bs-navbar-collapse navbar-right" role="navigation">
+                            <ul class="nav navbar-nav">
+
+                                <li class="btn [% IF c.request.path.match('admin/profile' _ '.*') %] active [% END %]" ><a title="" href="/user/profile"><i class="icon icon-user"></i> <span class="text">Profile</span></a></li>
+                                <li class="btn "><a title="" href="/logout"><i class="icon icon-share-alt"></i> <span class="text">Logout</span></a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-content blocky">
+            <div class="sidebar-dropdown"><a href="#">MENU</a></div>
+              <div class="sidey">
+                 <div class="side-cont">
+                    <ul class="nav">
+                        <li [% IF (!c.request.path || c.request.path.match('home' _ '.*')) %] class="current" [% END %]><a href="/"><i class="icon icon-home"></i> <span>Your Service Home</span></a></li>
+
+                        [% IF c.user.has_period_users_subscription %]
+                            <li [% IF c.request.path.match('user/manage_users' _ '.*') %] class="current" [% END %]><a href="/user/manage_users"><i class="icon icon-wrench"></i> <span>Manage Users</span></a></li>
+                        [% END %]
+
+                        [% IF c.user.has_ip_range_subscription %]
+                            <li [% IF c.request.path.match('user/manage_ips' _ '.*') %] class="current" [% END %]><a href="/user/manage_ips"><i class="icon icon-th"></i> <span>Manage IPs</span></a></li>
+                        [% END %]
+                    </ul>
+
+                 </div>
+              </div>
+
+            <div id="content" class="mainy">
+                [% content %]
+            </div>
+        </div>
+
+
+    </body>
+</html>

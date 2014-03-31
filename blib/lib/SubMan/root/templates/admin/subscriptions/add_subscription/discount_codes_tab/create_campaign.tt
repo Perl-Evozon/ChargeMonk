@@ -1,0 +1,135 @@
+<link href="/static/css/uniform.css" rel="stylesheet">
+
+<div id="overlay">
+    <!-- this is used as an intermediate layer to display between page elements and the manage groups 'popup' -->
+</div>
+
+<div id="create_campaign" class="create_campaign">
+    <div id="popup" class="popup">            
+        <div class="content icons-grey">
+            <i class="cancel_create_campaign icon icon-remove-circle icon-grey" style="float: right;margin-bottom: 15px;"></i>
+            [% IF simulate_modal_campaign %]
+                [% INCLUDE include/common/alerts.tt %]
+            [% END %]
+            <div class="container-fluid">
+                <div class="widget-box">
+                    <div class="widget-title">
+                            <h5>Create campaign</h5>                      
+                    </div>
+                </div>
+
+                <div class="widget-content nopadding">    
+                    <form action="#" class="form-horizontal" method="post" id="create_campaign_form"> 
+                        <div class="control-group">
+                            <label class="control-label">Campaign name:</label>
+                            <div class="controls">
+                                <input type="text" style="width:15%" id="campaign_name" name="name" maxlength="15"  required/>/
+                            </div>
+
+                            <label class="control-label">Number of codes:</label>
+                            <div class="controls">
+                                <input type="number" style="width:25%" id="nr_of_codes" name="nr_of_codes" maxlength="3"  required/>
+                            </div>
+                            
+                            <label class="control-label">Prefix:</label>
+                            <div class="controls">
+                                <input type="text" style="width:25%" id="prefix" name="prefix" maxlength="4"  required/>
+                            </div>
+
+                            <label class="control-label">Start date:</label>
+                            <div class="controls">
+                                <input type="text" style="width:25%" id="start_date" name="start_date" maxlength="4"  required/>
+                            </div>
+
+                            <label class="control-label">Redeem date:</label>
+                            <div class="controls">
+                                <input type="text" style="width:25%" id="end_date" name="end_date" maxlength="4"  required/>
+                            </div>
+                         
+                            <input type="hidden" value="" name="simulate_modal"/>
+                            <input type="hidden" value="" name="simulate_modal_campaign"/>
+                        </div>
+
+                        <div style="margin-left:28%;margin-top: 30px;">
+                            <button class="btn" type="button" name="submit_create_campaign_form" id="submit_create_campaign_form">
+                                <i class="icon icon-ok"></i> Save
+                            </button>
+                            &nbsp;or&nbsp;
+                            <a href="#" class="cancel_create_campaign">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+$(document).ready( function(){
+
+    $('#campaign_btn').on('click', function( e ) {
+        $('#overlay').fadeIn();
+        $('#create_campaign').fadeIn();
+
+        $('input[name=simulate_modal]').each(function() {
+            $(this).val(0);
+        });
+        $('input[name=simulate_modal_campaign]').each(function() {
+            $(this).val(1);
+        });
+        
+        // if real human click
+        if ( e.hasOwnProperty('originalEvent') ) {
+            // remove previous alerts
+            $('.span12 .alert').each(function() {
+                $(this).remove();
+            });       
+        }
+        return false;
+    });
+
+    $('.cancel_create_campaign').on('click', function() {
+        $('#create_campaign').fadeOut();
+        $('#overlay').fadeOut();
+        $('input[name=simulate_modal]').each(function() {
+            $(this).val(0);
+        });
+    });
+
+    $('#start_date').datepicker({
+        format: "MM dd, yyyy",
+        weekStart: 1,
+        startDate: "today",
+        autoclose: true
+    });
+    $('#end_date').datepicker({
+        format: "MM dd, yyyy",
+        weekStart: 1,
+        startDate: "today",
+        autoclose: true
+    });
+    
+    $('#end_date').change(function(){
+        $('#start_date').datepicker('setEndDate', $('#end_date').val());
+    });
+    $('#start_date').change(function(){
+        $('#end_date').datepicker('setStartDate', ($('#start_date').val() || 'today'));
+    });
+        
+    $('#submit_create_campaign_form').on('click', function() {
+        $.post('add_subscription/discount_codes_tab/simulate_modal_campaign', {
+            name:           $('#campaign_name').val(),
+            prefix:         $('#prefix').val(),
+            nr_of_codes:    $('#nr_of_codes').val(),
+            start_date:     $('#start_date').val(),
+            end_date:       $('#end_date').val(),
+            create_campaign_form: 1
+        }, function(data, textStatus, xhr) {
+            $('#discount_codes').html(data);
+        });
+    });
+});
+
+</script>

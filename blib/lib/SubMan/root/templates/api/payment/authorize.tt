@@ -1,0 +1,119 @@
+[% USE date;
+   current_date = date.format( date.now, '%Y-%m-%d' ).split('-');
+%]
+
+<div>
+    <form id="authorize-payment-form" class="registration">
+        <input type="hidden" name="registration_token" value="[% c.request.param('token') %]" />
+        <div class="row cf">
+            <div class="cf pull-left">
+              <img class="pull-left" alt="" src="/static/img/download.jpg">
+            </div>
+            <div class="register-steps cf">
+                <div class="step">
+                    <i>1</i>
+                    <span>Personal Info</span>
+                </div>
+                <div class="step active">
+                    <i>2</i>
+                    <span>Credit Card Info</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-data">
+            <div class="form-row">
+                <label for="credit_card_name">Name on card:</label>
+                <input id="name" type="text" autocomplete="off" name="name" />
+            </div>
+            <div class="form-row">
+                <label for="credit_card_number">Card number:</label>
+                <input id="number" type="text" autocomplete="off" name="number"/>
+            </div>
+            <div class="form-row">
+                <label for="credit_card_cvv2">CVV:</label>
+                <input id="cvv" type="text"  autocomplete="off" name="cvv" />
+            </div>
+            <div class="form-row">
+                <label for="credit_card_expiration">Expiration date(mm/yyyy):</label>
+                <select id="month" name="month" style="width:136px;">
+                    [% FOREACH month_number IN [ '01' .. '12' ] %]
+                        <option value="[%month_number%]">[%month_number%]</option>
+                    [% END %]
+                </select>
+                    /
+                <select id="year" name="year" style="width:165px;">
+                    [% FOREACH year_number IN [ current_date.0 .. 2100  ] %]
+                        <option value="[%year_number%]">[%year_number%]</option>
+                    [% END %]
+                </select>
+            </div>
+            <div class="form-row right">
+                <button id="submit_authorize" value="Confirm" class="btn btn-primary">Continue</button>
+            </div>
+        </div>
+        <div class="description">
+            <h1>Safe checkout</h1>
+            <p>
+                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                 vel fringilla elit. Praesent congue elit et lectus porttitor
+                 vitae semper dui aliquam. Duis porta convallis sem at aliquam.
+            </p>
+            <p>
+                 In nisl metus, interdum ac fermentum ac, dignissim quis nibh.
+                 Vivamus pulvinar, arcu sit amet aliquet ultricies, nisl erat
+                 rutrum arcu, ac blandit justo lorem quis quam.
+            </p>
+        </div>
+        <div class="spacer"></div>
+    </form>
+</div>
+
+<script type="text/javascript">
+$(function() {
+    $('#submit_authorize').on('click', function(e){
+        var current_month = "[%current_date.1%]";
+        if ( !$('#name').val() ) {
+            generate_alert( 'error_name', 'Name field can not be empty' );
+            return false;
+        } else if ( !$('#number').val() || !$.isNumeric( $('#number').val() ) || $('#number').val().toString().length !== 16 ) {
+            generate_alert( 'error_number','Card number appears to be invalid. The number should be composed of 16 digits, no spaces: "xxxxxxxxxxxxxxxx"' );
+            return false;
+        } else if ( !$('#cvv').val() || !$.isNumeric( $('#cvv').val() ) || $('#cvv').val().toString().length !== 3 ) {
+            generate_alert( 'error_cvv', 'CVV code appears to be invalid. The code should be composed of 3 digits ussaly marked on the back of the card' );
+            return false;
+        } else if ( parseInt($('#month option :selected').val()) < parseInt(current_month) ) {
+            generate_alert( 'error_month', 'Expiration date can not be earlier than current date' );
+            return false;
+        }
+        var $form = $("#authorize-payment-form");
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: '/api/subscriptions/payment',
+            dataType: 'json',
+            data: $form.serialize(),
+            success: function(response, textStatus, jqXHR){
+                if ( response.success ) {
+                    generate_alert('success', response.success);
+                    window.location = "[%finish_register_page%]";
+                } else {
+                    generate_alert('error', response.error);
+                }
+            },
+            error: function(response, textStatus, jqXHR) {
+                generate_alert('error', 'There has been an error while processing the data. Please contact support');
+            }
+        });
+    });
+    
+    function generate_alert(type, alert_text) {
+        $(".alert").remove();
+        
+        var alert = '<div id="'+ type +'" class="alert alert-error fade in" data-alert="alert">'+ alert_text +' <button type="button" class="close" data-dismiss="alert">&times;</button> </div>';
+        $(alert).insertBefore('#authorize-payment-form');
+    
+        return true;
+    }
+});
+
+</script>

@@ -1,0 +1,9 @@
+<div id="subheader">
+    <div class="container">
+        <div class="container">
+            <div class="span12">
+                <h2>Set User Password for [% user.firstname %] [% user.lastname %]</h2>
+            </div>
+        </div>
+    </div>
+</div>

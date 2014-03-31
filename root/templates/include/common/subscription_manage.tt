@@ -1,0 +1,316 @@
+<script type="text/javascript">
+
+var errors = "[%errors%]";
+var current_location = window.location.pathname;
+var action = (/save|add/.test(current_location)) ? 'add_subscription' : 'edit_subscription';
+var keep_update_display = /update/.test(current_location) ? 1 : 0;
+var subscription_id = ( action == 'edit_subscription' ) ? '[%subscription.id%]/' : '';
+
+
+// handle 'has_trial'
+if ( errors || keep_update_display ) {
+    $('input:radio[name=has_trial]').filter('[value=[%c.req.params.has_trial%]]').prop('checked', true);
+    $("input[name=has_trial]").on('change', function(){
+        ( $(this).val() == 1 ) ? $('#trial_options').slideDown() : $('#trial_options').slideUp();
+    });
+    ( $("input[type='radio'][name='has_trial']:checked").val() == 1 ) ? $('#trial_options').slideDown() : $('#trial_options').slideUp();
+    $('input:radio[name=require_credit_card]').filter('[value=[%c.req.params.require_credit_card%]]').prop('checked', true);
+}
+
+$(document).ready( function () {
+    $('#myTab a[href="#discount_codes"]').tab('show')
+    // redo modal...if previously set
+    if ( [% simulate_modal || 0 %] == 1 ) {
+        $('#groups_btn').trigger('click');
+    }
+    // hide subscription_configuration
+    $('#subscription_configuration').hide();
+    
+    // set styling for current tab
+    $('#myTab a').on('click', function (e) {
+        e.preventDefault();
+        $('#myTab a').each(function() {
+            $(this).css('background-color', 'white');
+        });
+        $(this).tab('show');
+        $(this).css('background-color', '#EEEEEE');
+    });
+    
+    // add options for period
+    $("select[class=period_select]").each(function() {
+        $(this).append('<option value=""> Select Period Unit... </option>');
+        $(this).append('<option value="Day"> Day(s) </option>');
+        $(this).append('<option value="Week"> Week(s) </option>');
+        $(this).append('<option value="Month"> Month(s) </option>');
+        $(this).append('<option value="Year"> Year(s) </option>');
+    });
+    
+    // add options for currency select
+    $("select[class=currency_select]").each(function() {
+        $(this).append('<option value=""> Select Currency ... </option>');
+        $(this).append('<option value="EUR"> EUR </option>');
+        $(this).append('<option value="USD"> USD </option>');
+    });
+
+    // load content for tabs
+    var reload_data = ( errors || keep_update_display ) ?  {
+                                        selected_features : {
+                                            reload_features : "[%reload_features%]",
+                                            reload_subscription_features : "[%reload_subscription_features%]"
+                                        },
+                                        group_order : {
+                                            reload_groups : "[%reload_groups%]"
+                                        },
+                                        selected_upgrades : {
+                                            reload_upgrades : "[%reload_upgrades%]"
+                                        },
+                                        selected_downgrades : {
+                                            reload_downgrades : "[%reload_downgrades%]"  
+                                        },
+                                        group_id : "[% c.req.params.subscription_group_id %]" || "1",
+                                    }
+                                  : { group_id : 1 };
+    
+    $('#features').load("/admin/subscriptions/" + action + "/features_tab/" + subscription_id + reload_data.group_id, reload_data.selected_features, refresh_select2);
+    $('#group').load("/admin/subscriptions/" + action + "/group_tab/" + subscription_id + reload_data.group_id, reload_data.group_order, refresh_select2);
+    $('#upgrade').load("/admin/subscriptions/" + action + "/upgrade_tab/" + subscription_id + reload_data.group_id, reload_data.selected_upgrades, refresh_select2);
+    $('#downgrade').load("/admin/subscriptions/" + action + "/downgrade_tab/" + subscription_id + reload_data.group_id, reload_data.selected_downgrades, refresh_select2);
+    $('#discount_codes').load("/admin/subscriptions/tabs/discount_codes/" + (subscription_id || '0/')+'?added_campaigns='+$("#added_campaigns").val(), refresh_select2);
+
+    // initialize 'select' with first option text
+    $('.select2-container a span').each(function() {
+        if ( $(this).text() == '') {
+            $(this).text( $(this).parent().parent().parent().find('select option:first').text() );
+        }
+    });
+    
+    // activate "Features" tab on page load
+    $('#myTab a:first').trigger('click');
+    
+    // reset subscription configuration
+    //reset_subscr_configuration_fields();
+
+    // handle 'type select' change
+    $('#type').parent().on('change', function() {
+        if ( $('#type').val() == 'promo' ) {
+            $("#trial_options").css('display', 'block');
+            // trial period is no longer optional
+            $("label:contains('Has Trial')").css('display', 'none');
+            $("label:contains('Has Trial')").next('.controls').css('display', 'none');
+        } else {
+            // trial period is optional
+            $("label:contains('Has Trial')").css('display', 'block');
+            $("label:contains('Has Trial')").next('.controls').css('display', 'block');
+            // display trial options only if has_trial is set to 'yes'
+            if(  $("label:contains('Has Trial')").next('.controls').find('span:first').hasClass('checked') ) {
+                //has_trial is set to 'yes'
+                $("#trial_options").css('display', 'block');
+            } else {
+                //has_trial is set to 'no'
+                $("#trial_options").css('display', 'none');
+            }
+        }
+    });
+    
+    // handle 'subscription group' change
+    $('#subscription_group_id').parent().on('change', function() {
+        var selected_group = $(this).find(':selected').val();
+        
+        // load new content for tabs
+        $('#features').load("/admin/subscriptions/" + action + "/features_tab/" + subscription_id + selected_group, refresh_select2);
+        $('#group').load("/admin/subscriptions/" + action + "/group_tab/" + subscription_id + selected_group, refresh_select2);
+        $('#upgrade').load("/admin/subscriptions/" + action + "/upgrade_tab/" + subscription_id + selected_group, refresh_select2);
+        $('#downgrade').load("/admin/subscriptions/" + action + "/downgrade_tab/" + subscription_id + selected_group, refresh_select2);
+    });
+    
+    // handle 'type' change
+    $('#type').parent().on('change', function() {
+        if( $('#type').val() == 'promo' ) {
+            hide_price_and_period_data();
+        } else {
+            $('#price_data').show();
+            $('#period_data').show();
+            $('#price_data input').each(function(){
+                if ( ! $(this).hasClass('select2-input') ) {
+                }
+            });
+            $('#period_data input').each(function(){
+                if ( ! $(this).hasClass('select2-input') ) {
+                }
+            });
+        }
+        
+    });
+
+    access_type_slide_menu(0);
+    // handle 'access type' change    
+    if ( errors || keep_update_display ) reload_subscription_data_values();
+    $('#access_type').on("change", function() {
+        access_type_slide_menu(1);
+    });
+});
+
+if ( errors || keep_update_display ) keep_basic_form_parameters();
+
+function access_type_slide_menu(reset_yn) {
+    if ( $('#access_type').val() ) {
+        // hide subscription_configuration
+        $('#subscription_configuration').slideUp(600, function(){
+            // enable all fields
+            $('#price_data').show();
+            $('#period_data').show();
+            $('#nr_of_users_data').show();
+            $('#nr_of_concurrent_users_data').show();
+            $('#nr_of_concurrent_IPs_data').show();
+            $('#resource_type_data').show();
+            $('#resource_quantity_data').show();
+            $('#volume_data').show();
+            
+            // perform changes on fields
+            if ( reset_yn ) reset_subscr_configuration_fields();
+
+            if ($('#access_type').val() == 'period') {
+                //disable fields which are not required for 'period' subscription
+                $('#nr_of_users_data').hide();
+                $('#nr_of_concurrent_users_data').hide();
+                $('#nr_of_concurrent_IPs_data').hide();
+                $('#resource_type_data').hide();
+                $('#resource_quantity_data').hide();
+                $('#volume_data').hide();
+            } else if ($('#access_type').val() == 'period_users') {
+                //disable fields which are not required for 'period users' subscription
+                $('#nr_of_users_data').hide();
+                $('#nr_of_concurrent_IPs_data').hide();
+                $('#resource_type_data').hide();
+                $('#resource_quantity_data').hide();
+                $('#volume_data').hide();
+            } else if ($('#access_type').val() == 'resources') {
+                //disable fields which are not required for 'resources' subscription
+                $('#nr_of_users_data').hide();
+                $('#nr_of_concurrent_users_data').hide();
+                $('#nr_of_concurrent_IPs_data').hide();
+                $('#volume_data').hide();
+            } else if ($('#access_type').val() == 'IP_range') {
+                //disable fields which are not required for 'IP range' subscription
+                $('#nr_of_users_data').hide();
+                $('#nr_of_concurrent_users_data').hide();
+                $('#resource_type_data').hide();
+                $('#resource_quantity_data').hide();
+                $('#volume_data').hide();
+            } else {
+                //disable fields which are not required for 'API calls' subscription
+                $('#nr_of_users_data').hide();
+                $('#nr_of_concurrent_users_data').hide();
+                $('#nr_of_concurrent_IPs_data').hide();
+                $('#resource_type_data').hide();
+                $('#resource_quantity_data').hide();
+            }
+            
+            // hide period and price data for 'Promo' subscription
+            if ($('#type').val() == 'promo') {
+                hide_price_and_period_data();
+            } 
+            
+            // show subscription_configuration
+            $('#subscription_configuration').slideDown(600, function() {
+                //require needed fields for subscription configuration
+                $('#subscription_configuration input').each(function(){
+                    if( $(this).is(':visible') && ! $(this).hasClass('select2-input') ) {
+                        //$(this).attr('required', '1');
+                    } else {
+                        $(this).removeAttr('required');
+                    }
+                });
+            });
+        });
+    } else {
+        // hide subscription_configuration
+        $('#subscription_configuration').slideUp(600);
+        
+        // reset configuration fields
+        reset_subscr_configuration_fields();
+    }
+}
+
+function reset_subscr_configuration_fields() {
+    $('#subscription_configuration select').each( function(){
+        $(this).val('');
+    });
+    $('#subscription_configuration .select2-container a span').each(function() {
+        //reinitialize 'Select Period ...' and 'Select Currency ...' for trial data
+        $(this).text( $(this).parent().parent().parent().find('select option:first').text() );
+    });
+    $('#subscription_configuration input[type=text]').each( function() {
+        $(this).removeAttr("required");
+        $(this).val('');
+    });
+    $('#subscription_configuration input[type=number]').each( function() {
+        $(this).removeAttr("required");
+        $(this).val('');
+    });
+    $('#subscription_configuration input[type=radio]').each( function () {
+        if ($(this).val() == 1) {
+            $(this).attr('checked');
+            $(this).parent().parent().find('span').addClass('checked');
+        } else {
+            $(this).removeAttr('checked');
+            $(this).parent().parent().find('span').removeClass('checked');
+        }
+    });
+    $('#trial_options').css("display", "block");
+};
+
+function hide_price_and_period_data(){
+    $('#price_data').hide();
+    $('#period_data').hide();
+    $('#price_data input').each(function(){
+        $(this).removeAttr('required');
+        $(this).val('');
+    });
+    $('#period_data input').each(function(){
+        $(this).removeAttr('required');
+        $(this).val('');
+    });
+};
+
+/*
+ * Keep form parameters
+ */
+
+function keep_basic_form_parameters() {
+    $("#access_type option").filter(function() {
+        return $(this).val() == "[%c.req.params.access_type%]"
+    }).prop('selected', true);
+    $("#type option").filter(function() {
+        return $(this).val() == "[%c.req.params.type%]"
+    }).prop('selected', true);
+    $("#subscription_group_id option").filter(function() {
+        return $(this).val() == "[%c.req.params.subscription_group_id%]"
+    }).prop('selected', true);
+    $("#name").val("[% c.req.params.name %]");
+    $('input:radio[name=is_visible]').filter('[value=[%c.req.params.is_visible%]]').prop('checked', true);
+    $('input:radio[name=require_company_data]').filter('[value=[%c.req.params.require_company_data%]]').prop('checked', true);
+    $('input:radio[name=has_auto_renew]').filter('[value=[%c.req.params.has_auto_renew%]]').prop('checked', true);
+}
+
+function reload_subscription_data_values() {
+    $("#period_unit option").filter(function() {
+        return $(this).val() == "[%c.req.params.period_unit%]"
+    }).prop('selected', true);
+    $("#period").val("[%c.req.params.period%]");
+    $("#currency option").filter(function() {
+        return $(this).val() == "[%c.req.params.currency%]"
+    }).prop('selected', true);
+    $("#price").val("[%c.req.params.price%]");
+    $("#call_to_action").val("[%c.req.params.call_to_action%]");
+    $("#trial_period").val("[%c.req.params.trial_period%]");
+    $("#trial_period_unit option").filter(function() {
+        return $(this).val() == "[%c.req.params.trial_period_unit%]"
+    }).prop('selected', true);    
+    $("#trial_price").val("[%c.req.params.trial_price%]");
+    $("#trial_currency option").filter(function() {
+        return $(this).val() == "[%c.req.params.trial_currency%]"
+    }).prop('selected', true);    
+}
+
+</script>

@@ -1,0 +1,47 @@
+<div class="widget-box" id="codes_box" style="display:none;">
+    <div class="widget-content nopadding">
+        <div id="codes_table_container">
+            <div class="widget-title">
+                <h5>Discount Codes</h5>
+            </div>
+            <table id="codes_table" class="table table-hover table-bordered table-striped data-table">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>User</th>
+                        <th>Redeem date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    [% IF codes.size > 0 %]
+                        [% FOREACH code IN codes %]
+                        <tr>
+                            <td>[% code.code %]</td>
+                            <td>[% code.user.email %]</td>
+                            <td>[% code.redeem_date %]</td>
+                        </tr>
+                        [% END %]
+                    [% ELSE %]
+                    <tr>
+                        <td> No codes generated yet.</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    [% END %]
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+
+    [% IF campaigns.size > 0 %]
+    $("#codes_box").show();
+	$('#codes_table').dataTable();
+    $('input[type=text]').width('50%');
+    [% END %]
+});
+</script>

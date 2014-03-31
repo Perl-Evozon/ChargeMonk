@@ -1,0 +1,166 @@
+[% WRAPPER 'layouts/default.tt' %]
+[% USE date;
+   current_date = date.format( date.now, '%Y-%m-%d' ).split('-');
+   end_date
+    = date.calc.Add_Delta_Days(
+        current_date.0,
+        current_date.1,
+        current_date.2,
+        ( trial ? subscription.trial_period : subscription.period )
+    );
+   end_time = date.calc.Date_to_Time( end_date.0, end_date.1, end_date.2, '00', '00', '00' );
+%]
+
+[% IF ( c.stash.errors ) %]
+    <div class="alert alert-error">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+        [% FOREACH error IN c.stash.errors.keys %]
+            [% FOREACH error_message IN c.stash.errors.$error %]
+                [% error_message %]
+                [% LAST %]
+			[% END %]
+            [% LAST %]
+        [% END %]
+	</div>
+[% END %]
+<form class="registration" method="post" autocomplete="off"
+    action="/register/corporate/step-2/[% c.request.arguments.0  %]/[% c.request.arguments.1  %]">
+    <input type="hidden" name="active_from_date" value="[% date.format( date.now, '%Y-%m-%d' ) %]" />
+    <input type="hidden" name="active_to_date" value="[% date.format( end_time, '%Y-%m-%d' ) %]" />
+    [% IF subscription.number_of_users %]
+    <input type="hidden" name="nr_of_period_users" value="[% subscription.number_of_users %]" />
+    [% END %]
+    <div class="row cf">
+        <h1 class="step-name">
+            [% subscription.subscription_group.name %] [% subscription.name %] Subscription
+            [% IF trial %]Trial[% END %]
+            <sup><a href="/pricing">(change)</a></sup>
+        </h1>
+        <div class="register-steps cf">
+            <div class="step active">
+                <i>1</i>
+                <span>Personal Info</span>
+            </div>
+            <div class="step">
+                <i>2</i>
+                <span>Company Info</span>
+            </div>
+            <div class="step">
+                <i>3</i>
+                <span>Credit Card Info</span>
+            </div>
+            <div class="step">
+                <i>4</i>
+                <span>Confirmation</span>
+            </div>
+        </div>
+    </div>
+        
+    <div class="form-data">
+        <div class="form-row">
+            <label for="email">Email:</label>
+            <input type="email" name="email" required />
+        </div>
+        <div class="form-row">
+            <label for="password">Password:</label>
+            <input type="password" name="password" required minlength="4" />
+        </div>
+        [% IF required_data.first_name %]
+        <div class="form-row">
+            <label for="first_name">First Name:</label>
+            <input type="text" name="firstname" />
+        </div>
+        [% END %]
+        [% IF required_data.last_name %]
+        <div class="form-row">
+            <label for="last_name">Last Name:</label>
+            <input type="text" name="lastname" />
+        </div>
+        [% END %]
+        [% IF required_data.sex %]
+        <div class="form-row">
+            <label for="sex">Gender:</label>
+            <input type="radio" name="gender" value="M" />Male &nbsp;
+            <input type="radio" name="gender" value="F" />Female
+        </div>
+        [% END %]
+        [% IF required_data.date_of_birth %]
+        <div class="form-row">
+            <label for="date_of_birth">Date of Birth:</label>
+            <input type="text" name="birthday" />
+        </div>
+        [% END %]
+        [% IF required_data.address %]
+        <div class="form-row">
+            <label for="address">Address:</label>
+            <input type="text" name="address" />
+        </div>
+        [% END %]
+        [% IF required_data.address_2 %]
+        <div class="form-row">
+            <label for="address_2"></label>
+            <input type="text" name="address2" />
+        </div>
+        [% END %]
+        [% IF required_data.country %]
+        <div class="form-row">
+            <label for="country">Country:</label>
+            <input type="text" name="country" />
+        </div>
+        [% END %]
+        [% IF required_data.state %]
+        <div class="form-row">
+            <label for="state">State:</label>
+            <input type="text" name="state" />
+        </div>
+        [% END %]
+        [% IF required_data.zip_code %]
+        <div class="form-row">
+            <label for="zip_code">Zip Code:</label>
+            <input type="text" name="zip_code" />
+        </div>
+        [% END %]
+        [% IF required_data.phone_number %]
+        <div class="form-row">
+            <label for="phone_number">Phone Number:</label>
+            <input type="text" name="phone" />
+        </div>
+        [% END %]
+        <div class="form-row">
+            <input type="checkbox" name="terms"/>
+            <span>I agree with the terms and conditions</span>
+        </div>
+        <div class="form-row right">
+            <input type="submit" value="Continue" class="btn btn-primary" />
+            or <a href="/pricing">Cancel</a>
+        </div>
+    </div>
+    <div class="description">
+        <h1>
+            [% subscription.name %] Subscription[% IF trial %] Trial[% END %]
+            [% IF NOT trial %][% subscription.currency %] <span class="price">[% subscription.price %]</span>[% END %]
+        </h1>
+        <ul>
+            [% FOREACH feature_link = features %]
+            <li>
+                Feature [% loop.count %]: [% feature_link.feature.name %]
+            </li>
+            [% END %]
+            [% IF subscription.number_of_users %]
+            <li>
+                Number of concurent users: [% subscription.number_of_users %]
+            </li>
+            [% END %]
+            <li>
+                [% IF trial %]Trial [% END %] Start Date: [% date.format( date.now, '%m/%d/%y' ) %]
+            </li>
+            <li>
+                [% IF trial %]Trial [% END %] End Date: [% date.format( end_time, '%m/%d/%y' ) %]
+            </li>
+        </ul>
+    </div>
+    <div class="spacer"></div>
+</form>
+
+[% END %]
+

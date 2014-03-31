@@ -1,0 +1,68 @@
+[% WRAPPER 'layouts/default.tt' %]
+
+<form id="braintree-payment-form" class="registration" method="post" autocomplete="off"
+    action="/register/step-3/[% c.request.arguments.0  %]/[% c.request.arguments.1  %]">
+    <input type="hidden" name="registration_token" value="[% c.request.param('token') %]" />
+    <div class="row cf">
+        <div class="cf pull-left">
+          <img class="pull-left" alt="" src="/static/img/braintree.png">
+        </div>
+        <div class="register-steps cf">
+            <div class="step">
+                <i>1</i>
+                <span>Personal Info</span>
+            </div>
+            <div class="step active">
+                <i>2</i>
+                <span>Credit Card Info</span>
+            </div>
+            <div class="step">
+                <i>3</i>
+                <span>Confirmation</span>
+            </div>
+        </div>
+    </div>
+    <div class="form-data">
+        <div class="form-row">
+            <label for="credit_card_name">Name on card:</label>
+            <input type="text" autocomplete="off" data-encrypted-name="name" />
+        </div>
+        <div class="form-row">
+            <label for="credit_card_number">Card number:</label>
+            <input type="text" autocomplete="off" data-encrypted-name="number"/>
+        </div>
+        <div class="form-row">
+            <label for="credit_card_cvv2">CVV2:</label>
+            <input type="text"  autocomplete="off" data-encrypted-name="cvv" />
+        </div>
+        <div class="form-row">
+            <label for="credit_card_expiration">Expiration date:</label>
+            <input type="text" size="2" style="width:136px;" data-encrypted-name="month" />
+                /
+						<input type="text" size="4" style="width:136px;" data-encrypted-name="year" />
+        </div>
+        <div class="form-row right">
+            <input type="submit" id="submit" value="Continue" class="btn btn-success" />
+        </div>
+    </div>
+    <div class="description">
+        <h1>Safe checkout</h1>
+        <p>
+             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+             vel fringilla elit. Praesent congue elit et lectus porttitor
+             vitae semper dui aliquam. Duis porta convallis sem at aliquam.
+        </p>
+        <p>
+             In nisl metus, interdum ac fermentum ac, dignissim quis nibh.
+             Vivamus pulvinar, arcu sit amet aliquet ultricies, nisl erat
+             rutrum arcu, ac blandit justo lorem quis quam.
+        </p>
+    </div>
+    <div class="spacer"></div>
+</form>
+<script type="text/javascript" src="https://js.braintreegateway.com/v1/braintree.js"></script>
+<script type="text/javascript">
+  var braintree = Braintree.create("[% credentials.client_side_encryption_key %]");
+  braintree.onSubmitEncryptForm('braintree-payment-form');
+</script>
+[% END %]

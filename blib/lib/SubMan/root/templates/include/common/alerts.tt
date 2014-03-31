@@ -1,0 +1,12 @@
+[% IF alerts.size %]
+    <div class="span12" style="width: 95%; margin-top: 2%;">
+        [% FOREACH alert IN alerts %]
+            <div class="alert alert-[% alert.keys.first %]" style="margin-top: 10px;">
+                <button class="close" data-dismiss="alert">x</button>
+                <strong>[% alert.keys.first.ucfirst %]!</strong>
+                [% alert.${alert.keys.first} %]
+            </div>
+        [% END %]
+    </div>
+[% END %]
+

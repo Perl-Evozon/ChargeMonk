@@ -1,0 +1,89 @@
+[% WRAPPER layouts/admin.tt %]
+
+<script src="/static/js/jquery.dataTables.min.js"></script>
+
+<div id="content-header">
+	<h1>
+		Manage IPs for <b> [% user.firstname %] [% user.lastname %] </b>
+	</h1>
+	<div style="float: right;margin-right: 5%;">
+		<button class="btn" type="button" id="add_ip_range_btn"><i class="icon icon-user"></i> Add IP Range </button>
+	</div>
+</div>
+
+<hr>
+
+[% IF NOT simulate_modal AND NOT simulate_modal_edit %]
+    [% INCLUDE include/common/alerts.tt %]
+[% END %]
+
+[% INCLUDE admin/manage_ips/add_ip.tt %]
+[% INCLUDE admin/manage_ips/edit_ip.tt %]
+
+<form action="">
+    <div class="controls">
+        <select name="subscription_id">
+            [% FOREACH link_user_subscription = link_user_subscriptions %]
+            <option value="[% link_user_subscription.subscription_id %]"
+            [% IF c.req.param('subscription_id') == link_user_subscription.subscription_id %]
+            selected
+            [% END %]
+            >[% link_user_subscription.subscription.name %]</option>
+            [% END %]
+        </select>
+        <input type="submit" value="Select subscription" />
+    </div>
+</form>
+
+<div class="container-fluid">
+	<div class="widget-box">
+		<div class="widget-title">
+			<h5> [% total_ips %] IPs </h5>
+		</div>
+	    <div class="widget-content nopadding">
+			<table id="results_table" class="table table-hover table-striped table-bordered data-table">
+			    <thead>
+			        <tr>
+			            <th>From IP 	</th>
+			            <th>To IP	 	</th>
+			            <th>Start date 	</th>
+			            <th>Status 		</th>
+			        </tr>
+			    </thead>
+			  	<tbody>
+			  		[% FOREACH ip_range IN ip_ranges %]
+				  		<tr>
+				  			<td> <a href="/admin/manage_ips/[% user.id %]/[% ip_range.id %]?subscription_id=[% c.req.param('subscription_id') %]"> [% ip_range.from_ip %] </a>	</td>
+				  			<td> <a href="/admin/manage_ips/[% user.id %]/[% ip_range.id %]?subscription_id=[% c.req.param('subscription_id') %]"> [% ip_range.to_ip %]	  </a>	</td>
+				  			<td> [% ip_range.start_date.day %]/[% ip_range.start_date.month %]/[% ip_range.start_date.year %]	</td>
+				  			<td>
+				  				[% IF ip_range.status %]
+				  					Active
+				  				[% ELSE %]
+				  					Inactive
+				  				[% END %]
+				  			</td>
+				  		</tr>
+			  		[% END %]
+			  	</tbody>
+			</table>
+		</div>
+	</div>
+
+</div>
+
+<script>
+
+$(document).ready( function () {
+	if ( [% simulate_modal || 0 %] == 1 ) {
+        $('#add_ip_range_btn').trigger('click');
+    }
+
+ 	if ( [% simulate_modal_edit || 0 %] == 1 ) {
+        show_edit_modal();
+    }
+});
+
+</script>
+
+[% END %]

@@ -1,0 +1,520 @@
+[% WRAPPER layouts/admin.tt %]
+
+[% USE date(format = '%B %d, %Y') %]
+[% USE Number.Format( THOUSANDS_SEP => ',' ) %]
+
+<!-- <link href="/static/css/jquery-ui-1.10.0.custom.css" rel="stylesheet"> -->
+<script src="/static/js/jquery.dataTables.min.js"></script>
+<script src="/static/js/countries2.js"></script>
+
+<div id="content-header">
+    <h1>
+        Users
+    </h1>
+    <a href="/admin/users/add_user">
+        <button class="btn btn-info"><i class="icon icon-user"></i> Add user </button>
+    </a>
+</div>
+
+<hr>
+
+<div class="container-fluid">
+    <form id="search_form" method="post" action="/admin/users">
+            <div class="controls search_filters">
+                <div class="col-md-6">
+                    <div class="input-prepend input-append input-group">
+                        <span class="input-group-addon">
+                            <i class="icon icon-search" onclick="$('#search_form button[type=submit]').trigger('click');"></i>
+                        </span>
+                        <input class="span2 form-control" id="search_email_name_phone" name="search_email_name_phone" type="text" placeholder="Search by name, email, phone number" size="80" value="[% search_criteria.search_email_name_phone %]"/>
+                        <span class="input-group-addon">
+                            <i class="icon-remove-circle" onclick="$('#search_email_name_phone').val('');"></i>
+                        </span>
+                    </div>
+                </div>
+                [% FOREACH item IN search_criteria.country %]
+                    <input type="hidden" class="hidden_input" name="country" value="[% item %]"/>
+                [% END %]
+                <input type="hidden" class="hidden_input" name="signup_period" id="signup_period" value="[% search_criteria.signup_period %]"/>
+                <input type="hidden" class="hidden_input" name="start_date" id="start_date" value="[% search_criteria.start_date %]"/>
+                <input type="hidden" class="hidden_input" name="end_date" id="end_date" value="[% search_criteria.end_date %]"/>
+                [% FOREACH item IN search_criteria.user_status %]
+                    <input type="hidden" class="hidden_input" name="user_status" id="user_status" value="[% item %]"/>
+                [% END %]
+                [% FOREACH item IN search_criteria.user_type %]
+                    <input type="hidden" class="hidden_input" name="user_type" id="user_type" value="[% item %]"/>
+                [% END %]
+                <button class="btn btn-default" type="submit"> Search </button>
+                <button type="button" id="filter_button" class="btn btn-link" data-toggle="collapse" data-target="#search_filter" style="float:right;margin-right:5%">
+                    <span class="ui-button-text">Filter <span class="caret"></span></span>
+                </button>
+            </div>
+            <div class="container" id="search_users_set_filters">
+                [% FOREACH item IN search_criteria.country %]
+                    <button class="btn filter_criteria_btn"><i class="icon icon-remove-circle"></i> [% item %] </button>
+                [% END %]
+                [% IF search_criteria.start_date %]
+                    <button class="btn filter_criteria_btn"><i class="icon icon-remove-circle"></i> [% search_criteria.start_date %] <i class="icon icon-arrow-left"></i> </button>
+                [% END %]
+                [% IF search_criteria.end_date %]
+                    <button class="btn filter_criteria_btn"><i class="icon icon-remove-circle"></i> <i class="icon icon-arrow-right"></i> [% search_criteria.end_date %] </button>
+                [% END %]
+                [% IF search_criteria.signup_period %]
+                    <button class="btn filter_criteria_btn"><i class="icon icon-remove-circle"></i> [% search_criteria.signup_period %] </button>
+                [% END %]
+                [% FOREACH item IN search_criteria.user_status %]
+                    <button class="btn filter_criteria_btn"><i class="icon icon-remove-circle"></i> [% item %] </button>
+                [% END %]
+                [% FOREACH item IN search_criteria.user_type %]
+                    <button class="btn filter_criteria_btn"><i class="icon icon-remove-circle"></i> [% item %] </button>
+                [% END %]
+            </div>
+            <div class="collapse in" id="search_filter" style="margin-top:1%;margin-bottom:1%;">
+                <table id="filter_table">
+                    <thead>
+                        <tr>
+                            <th><b>Countries<b></th>
+                            <th><b>Sign-up period</b></th>
+                            <th><b>User status</b></th>
+                            <th><b>User type</b></th>
+                        </tr>
+                        <tr></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class='countries_filter'><em>United States</em></td>
+                            <td class='signup_filter'><em>Today</em></td>
+                            <td class='userstatus_filter'><em>Active</em></td>
+                            <td class='usertype_filter'><em>Customer</em></td>
+                        </tr>
+                        <tr>
+                            <td class='countries_filter'><em>United Kingdom</em></td>
+                            <td class='signup_filter'><em>Yesterday</em></td>
+                            <td class='userstatus_filter'><em>Inactive</em></td>
+                            <td class='usertype_filter'><em>Lead</em></td>
+                        </tr>
+                        <tr>
+                            <td class='countries_filter'><em>Canada</em></td>
+                            <td class='signup_filter'><em>Last week</em></td>
+                            <td></td>
+                            <td class='usertype_filter'><em>Admin</em></td>
+                        </tr>
+                        <tr>
+                            <td class='countries_filter'><em>Australia</em></td>
+                            <td class='signup_filter'><em>Last two weeks</em></td>
+                        </tr>
+                        <tr>
+                            <td class='countries_filter'><em>Netherlands</em></td>
+                            <td class='signup_filter'><em>Last month</em></td>
+                        </tr>
+                        <tr>
+                            <td class='signup_expand_filter'><em><a id="view_all_countries">view all</a></em></td>
+                            <td class='signup_expand_filter'><em><a id="view_all_signup_dates">view all</a></em></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div id="countries_div">
+                                    <ul>
+                                    </ul>
+                                </div>
+                            </td>
+                            <td>
+                                <div id="signup_dates_div">
+                                    <ul>
+                                        <li class='signup_filter'><em>Today</em></li>
+                                        <li class='signup_filter'><em>Yesterday</em></li>
+                                        <li class='signup_filter'><em>Last week</em></li>
+                                        <li class='signup_filter'><em>Last two weeks</em></li>
+                                        <li class='signup_filter'><em>Last month</em></li>
+                                        <li class='signup_filter'><em>Last two months</em></li>
+                                        <li class='signup_filter'><em>Last quarter</em></li>
+                                        <li class='signup_filter'><em>Last semester</em></li>
+                                        <li class='signup_filter'><em>Last year</em></li>
+                                        <hr>
+                                        <div>
+                                            Between&nbsp;
+                                            <div class="input-append input-group">
+                                                <input id="dp1" name="dp1" class="data_datepicker form-control" type="text" pattern="\b" value="" autoclose="true"/>
+                                                <span class="input-group-addon" onclick="$('#dp1').val(''); $('#dp1').trigger('change');"><i class="icon icon-remove-circle"></i></span>
+                                            </div>
+                                            &nbsp;-&nbsp;
+                                            <div class="input-append input-group">
+                                                <input id="dp2" name="dp2" class="data_datepicker form-control" type="text" value="" autoclose="true"/>
+                                                <span class="input-group-addon" onclick="$('#dp2').val(''); $('#dp2').trigger('change');"><i class="icon icon-remove-circle"></i></span>
+                                            </div>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+    </form>
+    <hr>
+    <div class="widget-box">
+        <div class="widget-content nopadding">
+            <table id="results_table" class="table table-hover table-striped table-bordered data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Country</th>
+                        <th>State</th>
+                        <th>Sign up date</th>
+                        <th>Status</th>
+                        <th>User type</th>
+                        <th>Current subscription</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    [% FOREACH user IN users %]
+                        <tr>
+                            <td>
+                                [% IF ( user.firstname || user.lastname ) %]
+                                    [% user.firstname %] [% user.lastname %]
+                                [% END %]
+                            </td>
+                            <td><a href="/admin/users/user_details/[% user.id %]">[% user.email %]</a></td>
+                            <td>[% user.phone %]</td>
+                            <td>[% user.country %]</td>
+                            <td>[% user.state %]</td>
+                            [% dt = user.signup_date %]
+                            [% dt = dt | replace('T', ' ') %]
+                            <td>[% date.format(dt) %]</td>
+                            <td>
+                                [% IF user.password %]
+                                    Active
+                                [% ELSE %]
+                                    Inactive
+                                [% END %]
+                            </td>
+                            <td>[% user.type %]</td>
+                            <td>[% user.current_subscription %]</td>
+                        </tr>
+                    [% END %]
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready( function () {
+    $('#filter_button').on('click', function(){
+        $(this).toggleClass('dropup');
+    });
+    var d = new Date();
+    today = d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
+
+    $('#results_table').dataTable();
+    $(".collapse").collapse();
+
+    $('#dp1').datepicker({
+        format: "MM dd, yyyy",
+        weekStart: 1,
+        endDate: "today",
+        autoclose: true
+    });
+
+    $('#dp2').datepicker({
+        format: "MM dd, yyyy",
+        weekStart: 1,
+        endDate: "today",
+        autoclose: true
+    });
+
+
+
+    $(document).mouseup(function (e){
+        // on click outside countries div or signup dates div we want them hidding
+        if (
+            ! $("#countries_div ul").is(e.target)
+            && $("#countries_div ul").has(e.target).length === 0
+            && ! $("#view_all_countries").is(e.target)
+        )
+            {
+                $("#countries_div ul").slideUp();
+            }
+        if (
+            ! $(".datepicker").is(e.target)
+            && $(".datepicker").has(e.target).length === 0
+            && ! $("#signup_dates_div ul").is(e.target)
+            && $("#signup_dates_div ul").has(e.target).length === 0
+            && ! $("#view_all_signup_dates").is(e.target)
+        )
+            {
+                $("#signup_dates_div ul").slideUp();
+            }
+    });
+
+    $('#view_all_countries').on('click',function() {
+        $('#countries_div ul').slideDown();
+        return false;
+    });
+
+    $('#view_all_signup_dates').on('click', function() {
+        $('#signup_dates_div ul').slideDown();
+        return false;
+    });
+
+    //load countries_div with all the country names
+    var countryLineArray = country.split('|');  // Split into lines
+    countryLineArray.sort();
+    for (var loop = 0; loop < countryLineArray.length; loop++) {
+        lineArray = countryLineArray[loop].split(':');
+        if ( lineArray[1] ) {
+            $('#countries_div ul').append("<li class='countries_filter'><em>" + lineArray[1] + "</em></li>");
+        }
+    };
+
+    // initialize dp1 and dp2 with start_date and end_date
+    ( $('.hidden_input[name=start_date]').val() ) ? $('#dp1').val( $('.hidden_input[name=start_date]').val() ) : $('#dp1').val('');
+    ( $('.hidden_input[name=end_date]').val() ) ? $('#dp2').val( $('.hidden_input[name=end_date]').val() ) : $('#dp2').val('');
+    // set limitations for dp1 and dp2
+    if ( $('.hidden_input[name=start_date]').val() ) {
+        $('#dp2').datepicker('setStartDate', $('.hidden_input[name=start_date]').val());
+    }
+    if ( $('.hidden_input[name=end_date]').val() ) {
+        $('#dp1').datepicker('setEndDate', $('.hidden_input[name=end_date]').val());
+    }
+
+    $("#results_table td").each(function(e) {
+        if ( !$(this).text() ) $(this).text('N/A');
+    });
+});
+
+$('#filter_table tbody').on('click', '.countries_filter em', function() {
+    var candidate_country = $(this).text();
+    var already_found = 0;
+
+    // see if filter is already set
+    $(".hidden_input").each(function() {
+        if ( candidate_country == $(this).val() ) {
+            already_found = 1;
+        }
+    });
+
+    // add filter
+    if ( already_found == 0 ) {
+        // add hidden input
+        $('.search_filters').append('<input type="hidden" class="hidden_input" name="country" value="' + candidate_country + '"/>');
+        //add search filter button
+        $('#search_users_set_filters').append('<button class="btn filter_criteria_btn"><i class="icon icon-remove-circle"></i> ' + candidate_country + ' </button>');
+    }
+
+    return false;
+});
+
+$('#filter_table tbody').on('click', '.signup_filter em', function() {
+    var candidate = $(this).text();
+    var already_found = 0;
+
+    // see if filter is already set
+    $(".hidden_input").each(function() {
+        if ( candidate == $(this).val() ) {
+            already_found = 1;
+        }
+    });
+
+    // add filter
+    if ( already_found == 0 ) {
+        //remove possible previously set signup_filter, startdate_filter, enddate_filter
+        //remove unnecessary hidden inputs and filter buttons
+        $(".hidden_input").each(function() {
+            if ( $(this).attr('name') == 'signup_period' || $(this).attr('name') == 'start_date' || $(this).attr('name') == 'end_date' ) {
+                var element = $(this).val();
+                $(".filter_criteria_btn").each(function() {
+                    if (element == $(this).text().replace(/(^[\s]+|[\s]+$)/g, '')) {
+                        $(this).remove();
+                    }
+                });
+                $(this).remove();
+            }
+        });
+
+        // reset dp1 and dp2
+        $('#dp1').val('');
+        $('#dp2').val('');
+
+        // add hidden input
+        $('.search_filters').append('<input type="hidden" class="hidden_input" name="signup_period" value="' + candidate + '"/>');
+        //add search filter button
+        $('#search_users_set_filters').append('<button class="btn filter_criteria_btn"><i class="icon icon-remove-circle"></i> ' + candidate + ' </button>');
+    }
+
+    return false;
+});
+
+$('#dp1, #dp2').on('keydown', function(event) {
+    if ( event.which == 8 ) {
+        //only backspace chr allowed
+        $(this).val('');
+        $(this).trigger('change');
+        $(this).datepicker('hide'); //hide the calendar
+        $(this).blur(); // element not focused any more
+    }
+    return false;
+});
+
+$('#dp1').on('change', function() {
+    var candidate = $(this).val();
+    var already_found = 0;
+
+    // see if filter is already set
+    $(".hidden_input").each(function() {
+        if ( candidate == $(this).val() && $(this).attr('name') == 'start_date') {
+            already_found = 1;
+        }
+    });
+
+    // add filter
+    if ( already_found == 0 ) {
+        //remove possible previously set signup_filter, startdate_filter
+        //remove unnecessary hidden inputs and filter buttons
+        $(".hidden_input").each(function() {
+            if ( $(this).attr('name') == 'signup_period' || $(this).attr('name') == 'start_date' ) {
+                var element = $(this).val();
+                $(".filter_criteria_btn").each(function() {
+                    if (element == $(this).text().replace(/(^[\s]+|[\s]+$)/g, '')) {
+                        $(this).remove();
+                        return( false ); // get out from the each loop
+                    }
+                });
+                $(this).remove();
+            }
+        });
+
+        if ( candidate ) {
+            // add hidden input
+            $('.search_filters').append('<input type="hidden" class="hidden_input" name="start_date" value="' + candidate + '"/>');
+            //add search filter button
+            $('#search_users_set_filters').append('<button class="btn filter_criteria_btn"><i class="icon icon-remove-circle"></i> ' + candidate + ' <i class="icon icon-arrow-left"></i> </button>');
+        }
+    }
+
+    // set start date for dp2
+    ( candidate ) ? $('#dp2').datepicker('setStartDate', candidate) : $('#dp2').datepicker('setStartDate', null);
+
+    return false;
+});
+
+$('#dp2').on('change', function() {
+    var candidate = $(this).val();
+    var already_found = 0;
+
+    // see if filter is already set
+    $(".hidden_input").each(function() {
+        if ( candidate == $(this).val() && $(this).attr('name') == 'end_date') {
+            already_found = 1;
+        }
+    });
+
+    // add filter
+    if ( already_found == 0 ) {
+        //remove possible previously set signup_filter, startdate_filter
+        //remove unnecessary hidden inputs and filter buttons
+        $(".hidden_input").each(function() {
+            if ( $(this).attr('name') == 'signup_period' || $(this).attr('name') == 'end_date' ) {
+                var element = $(this).val();
+                $(".filter_criteria_btn").each(function() {
+                    if (element == $(this).text().replace(/(^[\s]+|[\s]+$)/g, '')) {
+                        $(this).remove();
+                        return( false ); // get out from the each loop
+                    }
+                });
+                $(this).remove();
+            }
+        });
+
+        if ( candidate ) {
+            // add hidden input
+            $('.search_filters').append('<input type="hidden" class="hidden_input" name="end_date" value="' + candidate + '"/>');
+            //add search filter button
+            $('#search_users_set_filters').append('<button class="btn filter_criteria_btn"><i class="icon icon-remove-circle"></i> <i class="icon icon-arrow-right"></i> ' + candidate + ' </button>');
+        }
+    }
+
+    // set end date for dp1
+    ( candidate ) ? $('#dp1').datepicker('setEndDate', candidate) : $('#dp1').datepicker('setEndDate', "today");
+
+    return false;
+});
+
+$('#filter_table tbody').on('click', '.userstatus_filter em', function() {
+    var candidate = $(this).text();
+    var already_found = 0;
+
+    // see if filter is already set
+    $(".hidden_input").each(function() {
+        if ( candidate == $(this).val() ) {
+            already_found = 1;
+        }
+    });
+
+    // add filter
+    if ( already_found == 0 ) {
+        // add hidden input
+        $('.search_filters').append('<input type="hidden" class="hidden_input" name="user_status" value="' + candidate + '"/>');
+        //add search filter button
+        $('#search_users_set_filters').append('<button class="btn filter_criteria_btn"><i class="icon icon-remove-circle"></i> ' + candidate + ' </button>');
+    }
+
+    return false;
+});
+
+$('#filter_table tbody').on('click', '.usertype_filter em', function() {
+    var candidate = $(this).text();
+    var already_found = 0;
+
+    // see if filter is already set
+    $(".hidden_input").each(function() {
+        if ( candidate == $(this).val() ) {
+            already_found = 1;
+        }
+    });
+
+    // add filter
+    if ( already_found == 0 ) {
+        // add hidden input
+        $('.search_filters').append('<input type="hidden" class="hidden_input" name="user_type" value="' + candidate + '"/>');
+        //add search filter button
+        $('#search_users_set_filters').append('<button class="btn filter_criteria_btn"><i class="icon icon-remove-circle"></i> ' + candidate + ' </button>');
+    }
+
+    return false;
+});
+
+$('#search_users_set_filters').on('click', '.filter_criteria_btn', function() {
+        var elem = $(this).text().replace(/(^[\s]+|[\s]+$)/g, ''); //trim text attr
+
+        if ( $(this).html().indexOf("icon-arrow-left") >= 0 ) {
+            // we remove a signup period 'start date' criteria
+            $(".hidden_input[name=start_date]").remove();
+            $('#dp1').val('');
+            $('#dp2').datepicker('setStartDate', null);
+        } else if ( $(this).html().indexOf("icon-arrow-right") >= 0 ) {
+            // we remove a signup period 'end date' criteria
+            $(".hidden_input[name=end_date]").remove();
+            $('#dp2').val('');
+            $('#dp1').datepicker('setEndDate', "today");
+        } else {
+            // find and remove hidden input
+            $(".hidden_input").each(function() {
+                if ( elem == $(this).val() ) {
+                    $(this).remove();
+                    return( false ); //stop looping
+                }
+            });
+        }
+
+        //remove filter button (this element)
+        $(this).remove();
+
+        return false;
+});
+
+</script>
+
+[% END %]

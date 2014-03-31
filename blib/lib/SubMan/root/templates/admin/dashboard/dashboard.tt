@@ -1,0 +1,243 @@
+[% WRAPPER layouts/admin.tt %]
+
+<div class="page-title">
+    <h1>
+        Dashboard
+    </h1>
+</div>
+
+<div>
+    <div class="cf">
+        <div class="col-md-6">
+            <div class="awidget">
+                <div class="awidget-head">
+                    <h5>Revenue(EUR)</h5>
+                    <div class="pull-right">
+                        <select id="revenue_options" name="revenue">
+                            <option value="1w">Last week</option>
+                            <option value="2w">Last 2 weeks</option>
+                            <option value="1m">Last month</option>
+                            <option value="3m">Last 3 months</option>
+                            <option value="6m">Last 6 months</option>
+                            <option value="1y">Last year</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="awidget-body">
+                    <canvas id="revenue_chart" width="600" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="awidget">
+                <div class="awidget-head">
+                    <h5>Revenue prospect</h5>
+                </div>
+                <div class="awidget-body">
+                    <table id="prospect_table" class="table table-condesed" style="margin-top: 20px">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Prospect(EUR)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 42px;"></div> <!-- allign bottom border with the neighbour graph -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cf">
+        <div class="col-md-6">
+            <div class="awidget">
+                <div class="awidget-head">
+                    <h5>Subscribers</h5>
+                    <div class="pull-right">
+                        <select id="subscriber_options" name="subscribers">
+                            <option value="1w">Last week</option>
+                            <option value="2w">Last 2 weeks</option>
+                            <option value="1m">Last month</option>
+                            <option value="3m">Last 3 months</option>
+                            <option value="6m">Last 6 months</option>
+                            <option value="1y">Last year</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="awidget-body">
+                    <canvas id="subscribers_chart" width="600" height="200"></canvas>
+                    <div style="text-align: center">
+                        <span class="label" style="background-color:rgb(29, 168, 51)">New subscribers</span>
+                        <span class="label" style="background-color:rgb(243, 63, 70)">Lost subscribers</span>
+                        <span class="label" style="background-color:rgb(68, 183, 248)">Unconfirmed subscribers</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="awidget">
+                <div class="awidget-head">
+                    <h5>Subscriptions</h5>
+                </div>
+                <div class="awidget-body">
+                    <canvas id="subscriptions_chart" width="600" height="200"></canvas>
+                    <div style="margin-top: 20px;"></div> <!-- allign bottom border with the neighbour graph -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function() {
+    var requests = {
+        revenue : function () {
+            $.ajax({
+                url: "/admin/stats/revenue/",
+                type: "post",
+                dataType: "json",
+                data: { 'period' : $( "#revenue_options option:selected" ).val() },
+                async: false,
+                success: function(response, textStatus, jqXHR){
+                    var ctx = $("#revenue_chart").get(0).getContext("2d");
+                    var data = {
+                        labels : response.stats.labels,
+                        datasets : [
+                            {
+                                fillColor : "rgba(151,187,205,0.5)",
+                                strokeColor : "rgba(151,187,205,1)",
+                                pointColor : "rgba(151,187,205,1)",
+                                pointStrokeColor : "#fff",
+                                data : response.stats.revenue,
+                            },
+                        ]
+                    };
+                    var line_chart = new Chart(ctx).Line(data,
+                        {
+                            scaleShowLabels: true,
+                            scaleShowGridLines : false,
+                            animation: true,
+                            tooltips: true,
+                            bezierCurve : true,
+                        }
+                    );
+                }
+            });
+        },
+        subscribers : function() {
+            $.ajax({
+                url: "/admin/stats/subscribers",
+                type: "post",
+                dataType: "json",
+                data: { 'period' : $( "#subscriber_options option:selected" ).val() },
+                async: false,
+                success: function(response, textStatus, jqXHR){
+                    var ctx = $("#subscribers_chart").get(0).getContext("2d");
+                    var data = {
+                        labels : response.stats.labels,
+                        datasets : [
+                            {
+                                fillColor : "rgba(29, 168, 51, 0.5)",
+                                strokeColor : "rgba(29, 168, 51, 1)",
+                                data : response.stats.new_subscribers,
+                            },
+                            {
+                                fillColor : "rgba(243, 63, 70, 0.5)",
+                                strokeColor : "rgba(243, 63, 70, 1)",
+                                data : response.stats.lost,
+                            },
+                            {
+                                fillColor : "rgba(68, 183, 248, 0.5)",
+                                strokeColor : "rgba(68, 183, 248, 1)",
+                                data : response.stats.unconfirmed,
+                            },
+                        ]
+                    };
+                    var bar_chart = new Chart(ctx).Bar(data,
+                        {
+                            scaleShowLabels: true,
+                            scaleShowGridLines : false,
+                            animation: true,
+                            tooltips: true,
+                            bezierCurve : true,
+                        }
+                    );
+                }
+            });
+        },
+        subscriptions : function() {
+            $.ajax({
+                url: "/admin/stats/subscriptions",
+                type: "post",
+                dataType: "json",
+                data: { 'period' : $( "#subscriber_options option:selected" ).val() },
+                async: false,
+                success: function(response, textStatus, jqXHR){
+                    var data = [];
+                    $.each( response.stats, function( key, value ){
+                        response_object = response.stats[key];
+                        var options = {
+                            value : response_object.number_of_subscribers,
+                            label : response_object.name,
+                            color : '#'+(Math.random()*0xFFFFFF<<0).toString(16),
+                            labelColor : 'white',
+                            labelFontSize : '13'
+                        };
+                        data.push(options);
+                    });
+                    var ctx = $("#subscriptions_chart").get(0).getContext("2d");
+                    var pie_chart = new Chart(ctx).Pie(data,
+                        {
+                            scaleShowLabels: true,
+                            animation: true,
+                            animateScale: true,
+                            tooltips: true,
+                        }
+                    );
+                }
+            });
+        },
+        revenue_prospect : function() {
+            $.ajax({
+                url: "/admin/stats/revenue_prospect",
+                type: "post",
+                dataType: "json",
+                data: { 'period' : $( "#subscriber_options option:selected" ).val() },
+                async: false,
+                success: function(response, textStatus, jqXHR){
+                    console.log(response);
+                    var prospect_data = response.stats.revenue_prospect;
+                    console.log(prospect_data);
+                    $.each(prospect_data, function(index) {
+                        $("#prospect_table tbody").append( '<tr>'+
+                                                                '<td style="text-align: center;"><small>'+
+                                                                    prospect_data[index].month+
+                                                                '</small></td>' +
+                                                                '<td style="text-align: center;"><small>'+
+                                                                    prospect_data[index].amount +
+                                                                '</small></td>'+
+                                                            '</tr>'
+                        );
+                    });
+                }
+            });
+        }
+    };
+
+    requests.revenue();
+    requests.subscribers();
+    requests.subscriptions();
+    requests.revenue_prospect();
+
+    $("#revenue_options").on("change", function() {
+        requests.revenue();
+    });
+    $("#subscriber_options").on("change", function() {
+        requests.subscribers();
+    });
+})
+</script>
+
+[% END %]

@@ -1,0 +1,113 @@
+[% WRAPPER 'layouts/default.tt' %]
+[% USE date;
+   current_date = date.format( date.now, '%Y-%m-%d' ).split('-');
+   end_date
+    = date.calc.Add_Delta_Days(
+        current_date.0,
+        current_date.1,
+        current_date.2,
+        ( trial ? subscription.trial_period : subscription.period )
+    );
+   end_time = date.calc.Date_to_Time( end_date.0, end_date.1, end_date.2, '00', '00', '00' );
+%]
+
+<form class="registration" method="post" autocomplete="off" action="/register/complete_registration">
+    <input type="hidden" name="registration_token" value="[% c.request.param('registration_token') %]" />
+    <div class="row cf">
+        <div class="register-steps cf">
+            <div class="step">
+                <i>1</i>
+                <span>Personal Info</span>
+            </div>
+            <div class="step">
+                <i>2</i>
+                <span>Credit Card Info</span>
+            </div>
+            <div class="step active">
+                <i>3</i>
+                <span>Confirmation</span>
+            </div>
+        </div>
+    </div>
+    <div class="form-data">
+        <div id="subscription-details">
+            <h2>Subscription Details</h2>
+            <table>
+                <tr>
+                    <td>Your subscription:</td>
+                    <td>[% subscription.name %][% IF trial %] Trial[% END %]</td>
+                </tr>
+                <tr>
+                    <td>Start Date:</td>
+                    <td>[% date.format( date.now, '%m/%d/%y' ) %]</td>
+                </tr>
+                <tr>
+                    <td>End Date:</td>
+                    <td>[% date.format( end_time, '%m/%d/%y' ) %]</td>
+                </tr>
+                [% IF trial %]
+                <tr>
+                    <td>Price:</td>
+                    <td>[% subscription.currency %] [% subscription.price %]</td>
+                </tr>
+                [% END %]
+                <tr>
+                    <td>Number of concurrent users:</td>
+                    <td>[% subscription.number_of_users %]</td>
+                </tr>
+            </table>
+        </div>
+        <div id="card-info">
+            <h2>Credit Card Info</h2>
+            <table>
+                <tr>
+                    <td>Name on Card:</td>
+                    <td>[% c.request.param('credit_card_name') %]</td>
+                </tr>
+                <tr>
+                    <td>Card Number:</td>
+                    <td>[% c.request.param('credit_card_number') %]</td>
+                </tr>
+                <tr>
+                    <td>Expiration Date:</td>
+                    <td>[% c.request.param('credit_card_expiration') %]</td>
+                </tr>
+            </table>
+        </div>
+        <div class="spacer"></div>
+        <div class="form-row right">
+            <button id="step-2-back" class="btn">Back</button>
+            <input type="submit" value="Confirm" class="btn btn-primary" />
+        </div>
+    </div>
+    <div class="description">
+        <h1>Lorem ipsum</h1>
+        <p>
+             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+             vel fringilla elit. Praesent congue elit et lectus porttitor
+             vitae semper dui aliquam. Duis porta convallis sem at aliquam.
+        </p>
+        <p>
+             In nisl metus, interdum ac fermentum ac, dignissim quis nibh.
+             Vivamus pulvinar, arcu sit amet aliquet ultricies, nisl erat
+             rutrum arcu, ac blandit justo lorem quis quam.
+        </p>
+    </div>
+    <div class="spacer"></div>
+</form>
+
+<script type="text/javascript">
+    $(document).ready( function () {
+        $('button#step-2-back').click( function () {
+            console.info('back');
+            $.post(
+                '/register/individual/step-2/[% c.request.arguments.0  %]/[% c.request.arguments.1  %]',
+                {
+                    
+                }
+            );
+            return false;
+        });
+    });
+</script>
+[% END %]

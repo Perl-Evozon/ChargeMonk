@@ -1,0 +1,80 @@
+[% WRAPPER layouts/admin.tt %]
+
+<div id="content-header">
+	<h1>Themes</h1>
+    <a href="themes/add_theme">
+        <button class="btn btn-info"><i class="icon icon-user"></i> Add theme </button>
+    </a>
+</div>
+
+<hr>
+<form method="POST" action="/admin/themes/activate/" class="cf">
+	<div class="container">
+			<div class="theme">
+					<img src="/static/themes/default/Default.jpg" />
+					<a href="javascript:void(0);" data-id=1 class="clearfix">
+							<input type="checkbox" name="theme_id" value=1 [% IF themes.first.active %]checked[% END %] />
+							<span>Default</span>
+					</a>
+			</div>
+	</div>
+
+	<hr>
+
+	<div class="container">
+			[% FOREACH theme = themes %]
+			[% NEXT IF theme.id == 1 %]
+			<div class="theme">
+					<img src="/static/themes/[% theme.image_file %]" />
+					<button class="delete btn" data-id="[% theme.id %]">Delete</button>
+					<a href="javascript:void(0);" data-id="[% theme.id %]">
+							<input type="checkbox" name="theme_id" value=[% theme.id %] [% IF theme.active %]checked[% END %] />
+							<span>[% theme.name %]</span>
+					</a>
+			</div>
+			[% END %]
+	</div>
+
+	<div class="center">
+		<button id="submit_button" class="btn" type="submit" disabled ><i class="icon icon-ok"></i> Save</button>
+			&nbsp;or&nbsp;
+		<a href="">Cancel</a>
+	</div>
+</form>
+<script type="text/javascript">
+    $(document).ready( function () {
+			var initial_id =  $('.theme a input:checkbox:checked').val();
+        $('.theme').hover(
+            function () {
+                if (! ($(this).find('input[type="checkbox"]').attr('checked') || ($(this).children('button.delete').data("id") == initial_id))) {
+                    $(this).children('button.delete').show();
+                }
+            },
+            function () {
+                $(this).children('button.delete').hide();
+            }
+        );
+
+        $('.theme button.delete').each( function () {
+            $(this).click( function (e) {
+							e.preventDefault();
+							window.location = '/admin/themes/delete_theme/' + $(this).data('id');
+							return;
+            });
+        });
+
+        $('.theme a').click( function (event) {
+					$('#submit_button').prop("disabled",false);
+					$('.theme input[type="checkbox"]').each( function () {
+						$(this).attr('checked', false);
+					});
+					$(this).find('input[type="checkbox"]').attr('checked',true);
+          $(this).parent().children('button.delete').hide();
+					if ($(this).data("id") == initial_id) {
+					  $('#submit_button').prop("disabled",true);
+					}
+        });
+    });
+</script>
+
+[% END %]

@@ -1,0 +1,101 @@
+<style type="text/css">
+
+#generate_codes {
+    display: none;
+    z-index: 500;
+    position: absolute;
+    width:70%;
+    left: 16%;
+    top: 20%;
+}
+
+#generate_codes .content{
+    background:#fff;
+    padding: 20px;
+}
+#generate_codes .popup{
+    border-radius: 7px;
+    background:#6b6a63;
+    margin:10px auto 0;
+    padding:6px;
+    position:absolute;
+    width: 100%;
+}
+#generate_codes em{
+    font-style: normal;
+}
+
+</style>
+
+<div id="generate_codes" class="generate_codes">
+    <div id="popup" class="popup">
+        <div class="content icons-grey">
+            <i class="cancel_generate_codes icon icon-remove-circle icon-grey" style="float: right;margin-bottom: 15px;"></i>
+            [% IF simulate_modal_campaign %]
+                [% INCLUDE include/common/alerts.tt %]
+            [% END %]
+            <div class="container-fluid">
+                <div class="widget-box">
+                    <div class="widget-title">
+                            <h5>Generate codes</h5>
+                    </div>
+                </div>
+
+                <div class="widget-content nopadding">
+                    <form action="#" method="post" id="generate_codes_form">
+                            <label class="control-label">Number of codes:</label>
+                            <div class="controls">
+                                <input type="number" style="width:25%" id="c_nr_of_codes" name="c_nr_of_codes" maxlength="3"  required/>
+                            </div>
+
+                            <label class="control-label">Prefix:</label>
+                            <div class="controls">
+                                <input type="text" style="width:25%" id="c_prefix" name="c_prefix" maxlength="4"  required/>
+                            </div>
+
+
+                            <input type="hidden" value="" name="simulate_modal"/>
+                            <input type="hidden" value="" name="simulate_modal_campaign"/>
+                        </div>
+
+                        <div class="center">
+                            <button class="btn" type="button" name="submit_generate_codes_form" id="submit_generate_codes_form">
+                                <i class="icon icon-ok"></i> Generate
+                            </button>
+                            &nbsp;or&nbsp;
+                            <a href="#" class="cancel_generate_codes">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+$(document).ready( function(){
+    $('.cancel_generate_codes').on('click', function() {
+        $('#generate_codes').fadeOut();
+        $('#overlay').fadeOut();
+        $('input[name=simulate_modal]').each(function() {
+            $(this).val(0);
+        });
+    });
+
+    $('#submit_generate_codes_form').on('click', function() {
+        $.post('/admin/subscriptions/tabs/discount_codes/'+[% subscription_id %], {
+            prefix:             $('#c_prefix').val(),
+            nr_of_codes:        $('#c_nr_of_codes').val(),
+            generate_codes_form:1,
+            campaign_id:        $("#campaigns").val(),
+            added_campaigns:    $("#added_campaigns").val(),
+        }, function(data, textStatus, xhr) {
+            $('#discount_codes').html(data);
+            $('#overlay').fadeOut();
+        });
+    });
+});
+
+</script>

@@ -1,0 +1,252 @@
+[% WRAPPER layouts/admin.tt %]
+
+<script src="/static/js/jquery.dataTables.min.js"></script>
+<script src="/static/js/subman_validate.js"></script>
+
+<div id="content-header">
+        <h1>
+            Add Subscription
+        </h1>
+        <a href="#">
+                <button class="btn btn-info" id="groups_btn" ><i class="icon icon-th-large"></i> Groups </button>
+        </a>
+</div>
+
+[% IF NOT simulate_modal %]
+    [% INCLUDE include/common/alerts.tt %]
+[% END %]
+
+[% INCLUDE admin/subscriptions/manage_subscription_groups.tt %]
+
+<div class="row">
+    <form method="post" action="/admin/subscriptions/save" name="add_subscription_form" id="add_subscription_form" class="col-md-6">
+            <div class="control-group">
+                <label class="control-label">
+                    Subscription Name:
+                </label>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="name" name="name" maxlength="40" />
+                </div>
+                <label class="control-label">
+                    Subscription Type:
+                    <i class="icon-grey icon-question-sign tip-bottom" data-original-title="Please choose a type for your subscrition from the available list."></i>
+                </label>
+                <div class="form-group">
+                    <select style="width: 100%;" id="subscription_type" name="subscription_type">
+                        <option value="">Select Type ... </option>
+                        <option value="regular">Regular</option>
+                        <option value="promo">Promo</option>
+                    </select>
+                </div>
+                <label class="control-label">
+                    Subscription Group:
+                    <i class="icon-grey icon-question-sign tip-bottom" data-original-title="Please choose a group for your subscrition from the list of available groups."></i>
+                </label>
+                <div class="form-group">
+                    <select name="subscription_group_id" style="width: 100%;" id="subscription_group_id" >
+                        [% default_grp_id = 0 %]
+                        [% FOREACH grp IN groups %]
+                            [% IF grp.name == 'Default' %]
+                                [% default_grp_id = grp.id %]
+                            [% END %]
+                        [% END %]
+                        <option value="[% default_grp_id %]"> Default </option>
+                        [% FOREACH group IN groups.sort('name') %]
+                            [% UNLESS group.name == 'Default' %]
+                                <option value="[% group.id %]"> [% group.name %] </option>
+                            [% END %]
+                        [% END %]
+                    </select>
+                </div>
+                <label class="control-label">
+                    Visibility:
+                    <i class="icon-grey icon-question-sign tip-bottom" data-original-title="This sets wether the subscription is visible and available for all users."></i>
+                </label>
+                <div class="form-group">
+                    <label><input type="radio" value="1" name="is_visible" checked=""/> Public </label>
+                    <label><input type="radio" value="0" name="is_visible" />  Admin only</label>
+                </div>
+                <label class="control-label">
+                    Company Data?
+                    <i class="icon-grey icon-question-sign tip-bottom" data-original-title="Is the company data required for each user?"></i>
+                </label>
+                <div class="form-group">
+                    <label><input value="1" type="radio" name="require_company_data" /> Yes </label>
+                    <label><input value="0" type="radio" checked="" name="require_company_data" />  No </label>
+                </div>
+                <label class="control-label">Auto-renew?</label>
+                <div class="form-group">
+                    <label><input value="1" type="radio" checked="" name="has_auto_renew" /> Yes </label>
+                    <label><input value="0" type="radio"  name="has_auto_renew" />  No </label>
+                </div>
+                <label class="control-label">
+                    Access:
+                    <i class="icon-grey icon-question-sign tip-bottom" data-original-title="Please choose a type of access for your subscrition from the available list."></i>
+                </label>
+                <div class="form-group">
+                    <select name="access_type" style="width: 100%;" id="access_type" >
+                        <option value=""> Select Access Type ... </option>
+                        <option value="period"> Period </option>
+                        <option value="period_users"> Period Users </option>
+                        <option value="resources"> Resources </option>
+                        <option value="IP_range"> IP Users </option>
+                        <option value="API_calls"> API calls </option>
+                    </select>
+                </div>
+                <div id="subscription_configuration">
+                    <h5> Subscription Configuration </h5>
+                    <div id="period_data">
+                        <label class="control-label">Period:</label>
+                        <div class="form-group">
+                            <input type="text" class="only_digits_allowed" style="width: 25%" id="period" name="period" maxlength="10"/>
+                            <select style="width: 24.6%;" class="period_select" id="period_unit" name="period_unit">
+                            </select>
+                        </div>
+                    </div>
+                    <div id="price_data">
+                        <label class="control-label">Price:</label>
+                        <div class="form-group">
+                            <input type="text" class="only_digits_allowed" style="width: 25%" id="price" name="price" maxlength="10"/>
+                            <select style="width: 24.6%;" class="currency_select" id="currency" name="currency" >
+                            </select>
+                        </div>
+                    </div>
+                    <div id="nr_of_users_data">
+                        <label class="control-label">Number of users:</label>
+                        <div class="form-group">
+                            <input type="text" class="only_digits_allowed" style="width: 50%" id="nr_of_users" name="number_of_users" maxlength="10"/>
+                        </div>
+                    </div>
+                    <div id="nr_of_concurrent_users_data">
+                        <label class="control-label">Number of concurrent users:</label>
+                        <div class="form-group">
+                            <div class="clearfix">
+
+                                <div class="input-group pull-left" style="width:20%;margin-right: 10px;">
+                                    <span class="input-group-addon">From:</span>
+                                    <input type="text" class="only_digits_allowed form-control" id="min_active_period_users" name="min_active_period_users" maxlength="10"/>
+                                </div>
+
+                                <div class="input-group pull-left" style="width:20%;">
+                                    <span class="input-group-addon">To:</span>
+                                    <input type="text" class="only_digits_allowed form-control" id="max_active_period_users" name="max_active_period_users" maxlength="10"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="nr_of_concurrent_IPs_data">
+                        <label class="control-label">Number of concurrent IPs:</label>
+                        <div class="form-group">
+                            <div class="clearfix">
+
+                                <div class="input-group pull-left" style="width:20%;margin-right: 10px;">
+                                    <span class="input-group-addon">From:</span>
+                                    <input type="text" class="only_digits_allowed form-control" id="min_active_ips" name="min_active_ips" maxlength="10"/>
+                                </div>
+
+                                <div class="input-group pull-left" style="width:20%;">
+                                    <span class="input-group-addon">To:</span>
+                                    <input type="text" class="only_digits_allowed form-control" id="max_active_ips" name="max_active_ips" maxlength="10"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="resource_type_data">
+                        <label class="control-label">Resource type:</label>
+                        <div class="form-group">
+                            <input type="text" style="width: 50%" id="resource_type" name="resource_type" maxlength="10"/>
+                        </div>
+                    </div>
+                    <div id="resource_quantity_data">
+                        <label class="control-label">Resource quantity:</label>
+                        <div class="form-group">
+                            <div class="clearfix">
+
+                                <div class="input-group pull-left" style="width:20%;margin-right: 10px;">
+                                    <span class="input-group-addon">From:</span>
+                                    <input type="text" class="only_digits_allowed form-control" id="min_resource_quantity" name="min_resource_quantity" maxlength="10"/>
+                                </div>
+
+                                <div class="input-group pull-left" style="width:20%;">
+                                    <span class="input-group-addon">To:</span>
+                                    <input type="text" class="only_digits_allowed form-control" id="max_resource_quantity" name="max_resource_quantity" maxlength="10"/>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div id="volume_data">
+                        <label class="control-label">Volume:</label>
+                        <div class="form-group">
+                            <input type="text" style="width: 50%" id="api_calls_volume" name="api_calls_volume" maxlength="10"/>
+                        </div>
+                    </div>
+                    <label class="control-label">
+                        Call To Action:
+                        <i class="icon-grey icon-question-sign tip-bottom" data-original-title="Please choose a message to display on your subscription's presentation.(e.g.: Subscribe Now)"></i>
+                    </label>
+                    <div class="form-group">
+                        <input type="text" style="width: 50%" id="call_to_action" name="call_to_action" maxlength="30"/>
+                    </div>
+                    <label class="control-label">Has Trial?</label>
+                    <div class="form-group">
+                            <label><input data-target="#trial_options"  checked="" type="radio" name="has_trial" value="1" /> Yes </label>
+                            <label><input type="radio" name="has_trial" value="0"/>  No </label>
+                    </div>
+                    <div  id="trial_options">
+                        <h5> Trial Options </h5>
+                        <label class="control-label">Period:</label>
+                        <div class="form-group">
+                            <input type="text" class="only_digits_allowed" style="width: 25%;" id="trial_period" name="trial_period" maxlength="10"/>
+                            <select style="width: 24.6%;" class="period_select" id="trial_period_unit" name="trial_period_unit" >
+                            </select>
+                        </div>
+                        <label class="control-label">Require credit card?</label>
+                        <div class="form-group">
+                            <label><input checked="" type="radio" value="1" name="require_credit_card" /> Yes </label>
+                            <label><input type="radio" name="require_credit_card" value="0"/> No </label>
+                        </div>
+                        <label class="control-label">Price:</label>
+                        <div class="form-group">
+                            <input type="text" class="only_digits_allowed" style="width: 25%;" id="trial_price" name="trial_price" maxlength="10"/>
+                            <select style="width: 24.6%;" class="currency_select" name="trial_currency" id="trial_currency" >
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="add_subscr_data_tabs">
+                    <ul id="myTab" class="nav nav-tabs">
+                        <li><a href="#features" data-toggle="tab">Features</a></li>
+                        <li><a href="#group" data-toggle="tab">Group</a></li>
+                        <li><a href="#upgrade" data-toggle="tab">Upgrade</a></li>
+                        <li><a href="#downgrade" data-toggle="tab">Downgrade</a></li>
+                        <li><a href="#discount_codes" data-toggle="tab">Discount codes</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="features" class="tab-pane clearfix">
+                        </div>
+                        <div id="group" class="tab-pane clearfix">
+                        </div>
+                        <div id="upgrade" class="tab-pane clearfix">
+                        </div>
+                        <div id="downgrade" class="tab-pane clearfix">
+                        </div>
+                        <div id="discount_codes" class="tab-pane clearfix">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="center">
+        		<input type="hidden" name="added_campaigns" id="added_campaigns" value="[% added_campaigns %]" />
+                <button class="btn" type="submit" name="add_this_subscription" id="add_this_subscription"><i class="icon icon-ok"></i> Save</button>
+                &nbsp;or&nbsp;
+                <a href="#" onclick="goBack();">Cancel</a>
+            </div>
+    </form>
+</div>
+
+[% INCLUDE include/common/subscription_manage.tt %]
+
+[% INCLUDE include/common/validate.tt %]
+
+[% END %]

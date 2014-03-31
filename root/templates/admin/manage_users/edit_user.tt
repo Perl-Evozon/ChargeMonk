@@ -1,0 +1,84 @@
+<link href="/static/css/uniform.css" rel="stylesheet">
+
+<div id="overlay">
+    <!-- this is used as an intermediate layer to display between page elements and the manage groups 'popup' -->
+</div>
+
+<div id="manage_users_edit_user" class="manage_users_edit_user">
+    <div id="popup" class="popup">
+        <div class="content icons-grey">
+            <i id='cancel_manage_users_edit_user' class="icon icon-remove-circle icon-grey" style="float: right;margin-bottom: 15px;"></i>
+            [% IF simulate_modal_edit %]
+                [% INCLUDE include/common/alerts.tt %]
+            [% END %]
+            <div class="container-fluid">
+                <div class="widget-box">
+                    <div class="widget-title">
+                            <h5>Edit user</h5>
+                    </div>
+                </div>
+
+                <div class="widget-content nopadding">
+                    <form method="post" id="manage_users_add_user_form">
+                        <div class="control-group">
+                            <label class="control-label">First name:</label>
+                            <div class="controls">
+                                <input type="text" style="width:30%" value="[% period_user.first_name %]" id="first_name" name="first_name" maxlength="40"  required/>
+                            </div>
+
+                            <label class="control-label">Last name:</label>
+                            <div class="controls">
+                                <input type="text" style="width:30%" value="[% period_user.last_name %]" id="last_name" name="last_name" maxlength="40"  required/>
+                            </div>
+
+                            <label class="control-label">Email:</label>
+                            <div class="controls">
+                                <input type="email" style="width:30%" value="[% period_user.email %]" id="email" name="email" maxlength="100"  required/>
+                            </div>
+
+                            <div class="controls">
+                                <label><input type="radio" value="1" name="activated" [% IF period_user.status == 1 %] checked="checked" [% END %]>
+                                    Active
+                                </label>
+                                <label><input type="radio" value="0" name="activated" [% IF period_user.status == 0 %] checked="checked" [% END %]>
+                                    Inactive
+                                </label>
+                            </div>
+
+                            <input type="hidden" value="" name="simulate_modal"/>
+                            <input type="hidden" value="" name="simulate_modal_edit"/>
+                        </div>
+
+                        <div class="center">
+                            <button class="btn" type="submit" name="submit_edit_user_form" id="submit_edit_user_form"><i class="icon icon-ok"></i> Save</button>
+                            &nbsp;or&nbsp;
+                            <a href="#" onclick="goBack();">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+function show_edit_modal() {
+
+    $('#overlay').fadeIn();
+    $('#manage_users_edit_user').fadeIn();
+    $('input[name=simulate_modal_edit]').each(function() {
+        $(this).val(1);
+    });
+}
+
+$('#cancel_manage_users_edit_user').on('click', function() {
+    $('#manage_users_edit_user').fadeOut();
+    $('#overlay').fadeOut();
+    $('input[name=simulate_modal_edit]').each(function() {
+        $(this).val(0);
+    });
+});
+
+</script>

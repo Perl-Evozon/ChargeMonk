@@ -1,0 +1,3 @@
+[% WRAPPER 'layouts/default.tt' %]
+  [% INCLUDE include/common/alerts.tt %]
+[% END%]

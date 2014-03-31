@@ -1,0 +1,289 @@
+
+[% USE date;
+   current_date = date.format( date.now, '%Y-%m-%d' ).split('-');
+   end_date
+    = date.calc.Add_Delta_Days(
+        current_date.0,
+        current_date.1,
+        current_date.2,
+        ( trial ? subscription.trial_period : subscription.period )
+    );
+   end_time = date.calc.Date_to_Time( end_date.0, end_date.1, end_date.2, '00', '00', '00' );
+%]
+
+<form class="registration" id="register-form"">
+    <input type="hidden" name="sid" value="[%subscription.id%]"/>
+    <input type="hidden" name="active_from_date" value="[% date.format( date.now, '%Y-%m-%d' ) %]" />
+    <input type="hidden" name="success_page_return" value="[%success_page_return%]"/>
+    <input type="hidden" name="email_page_return" value="[%email_page_return%]"/>
+    <input type="hidden" name="trial" value="[%trial%]"/>
+    <input type="hidden" name="active_to_date" value="[% date.format( end_time, '%Y-%m-%d' ) %]" />
+    
+    [% IF subscription.number_of_users %]
+    <input type="hidden" name="nr_of_period_users" value="[% subscription.number_of_users %]" />
+    [% END %]
+    <div class="row cf">
+        <h1 class="step-name">
+            [% subscription.subscription_group.name %] [% subscription.name %] Subscription
+            [% IF trial %]Trial[% END %]
+            <sup><a href="/pricing.html">(change)</a></sup>
+        </h1>
+        <div class="register-steps cf">
+            <div class="step active">
+                <i>1</i>
+                <span>Personal Info</span>
+            </div>
+            <div class="step">
+                <i>2</i>
+                <span>Credit Card Info</span>
+            </div>
+        </div>
+    </div>
+    <div><small><span class="required"></span>All fields are required</small></div>
+    
+    <div class="form-data">
+        <h2><b>Contact information</b></h2>
+        <div class="form-row" id="email">
+            <label for="email">Email:</label>
+            <input type="email" name="email" style="width:300px;"/>
+        </div>
+        <div class="form-row" id="password">
+            <label for="password">Password:</label>
+            <input type="password" name="password"/>
+        </div>
+        <div class="form-row" id="domain">
+            <label for="domain">Domain:</label>
+            <input type="text" id="domain_check" name="domain" style="width:168px; margin-top: 9px"/><span class="btn orange" id="default_domain" disabled><i>.thepearlbee.com</i></span>
+        </div>
+        [% IF required_data.first_name %]
+        <div class="form-row" id="firstname">
+            <label for="firstname">First Name:</label>
+            <input type="text" name="firstname" />
+        </div>
+        [% END %]
+        [% IF required_data.last_name %]
+        <div class="form-row" id="lastname">
+            <label for="lastname">Last Name:</label>
+            <input type="text" name="lastname" />
+        </div>
+        [% END %]
+        [% IF required_data.sex %]
+        <div class="form-row" id="gender">
+            <label for="sex" id="sex">Gender:</label>
+            <input type="radio" name="gender" value="M" />Male &nbsp;
+            <input type="radio" name="gender" value="F" />Female
+        </div>
+        [% END %]
+        [% IF required_data.date_of_birth %]
+        <div class="form-row" id="birthday">
+            <label for="birthday">Date of Birth:</label>
+            <div class="input-append date" id="dpYears" data-date="12-02-2012" data-date-format="dd-mm-yyyy" data-date-viewmode="years">
+                <input class="span2" size="16" type="text" name="birthday" readonly="">
+                <span class="add-on"><i class="icon-calendar"></i></span>
+            </div>
+        </div>
+        [% END %]
+        [% IF required_data.address %]
+        <div class="form-row" id="address">
+            <label for="address">Address:</label>
+            <input type="text" name="address" />
+        </div>
+        [% END %]
+        [% IF required_data.address_2 %]
+        <div class="form-row">
+            <label for="address2"></label>
+            <input type="text" name="address2" />
+        </div>
+        [% END %]
+        [% IF required_data.country %]
+        <div class="form-row" id="country">
+            <label for="country">Country:</label>
+            <input type="text" name="country" />
+        </div>
+        [% END %]
+        [% IF required_data.state %]
+        <div class="form-row" id="state">
+            <label for="state">State:</label>
+            <input type="text" name="state" />
+        </div>
+        [% END %]
+        [% IF required_data.zip_code %]
+        <div class="form-row" id="zipcode">
+            <label for="zip_code">Zip Code:</label>
+            <input type="text" name="zip_code" />
+        </div>
+        [% END %]
+        [% IF required_data.phone_number %]
+        <div class="form-row" id="phone">
+            <label for="phone">Phone Number:</label>
+            <input type="text" name="phone" />
+        </div>
+        [% END %]
+        [% IF subscription.require_company_data && required_company_info %]
+            <h2><b>Company information</b></h2>
+
+            [% IF required_data.company_name %]
+            <div class="form-row" id="company_name">
+                <label for="company_name">Company Name:</label>
+                <input type="text" name="company_name" />
+            </div>
+            [% END %]
+            [% IF required_data.company_address %]
+            <div class="form-row" id="company_address">
+                <label for="company_address">Address:</label>
+                <input type="text" name="company_address" />
+            </div>
+            [% END %]
+            [% IF required_data.company_country %]
+            <div class="form-row" id="company_country">
+                <label for="company_country">Country:</label>
+                <input type="text" name="company_country" />
+            </div>
+            [% END %]
+            [% IF required_data.company_state %]
+            <div class="form-row" id="company_state">
+                <label for="company_state">State:</label>
+                <input type="text" name="company_state" />
+            </div>
+            [% END %]
+            [% IF required_data.company_zip_code %]
+            <div class="form-row" id="company_zip_code">
+                <label for="company_zip_code">Zip Code:</label>
+                <input type="text" name="company_zip_code" />
+            </div>
+            [% END %]
+            [% IF required_data.company_phone_number %]
+            <div class="form-row" id="company_phone">
+                <label for="company_phone">Phone:</label>
+                <input type="text" name="company_phone" />
+            </div>
+            [% END %]
+        [% END %]
+        [% IF has_campaigns %]
+            <h2><b>Discount Codes</b></h2>
+            <div class="form-row" id="discount_code">
+                <label for="discount_code">Code:</label>
+                <input type="text" name="discount_code" />
+            </div>
+        [% END %]
+        
+        <div class="form-row">
+            <span id="terms">
+                By clicking <a href="#continue_registration">Continue</a> you agree with the terms and conditions.</br><a href="#terms">(View terms and conditions)</a>
+            </span>
+        </div>
+        <div class="form-row right">
+            <button class="btn btn-success" id="continue_registration">Continue</button>
+            or <a href="/pricing.html">Cancel</a>
+        </div>
+    </div>
+    
+    <div class="description">
+        <h1>
+            [% subscription.name %] Subscription[% IF trial %] Trial[% END %]
+            [% IF NOT trial %][% subscription.currency %] <span class="price">[% subscription.price %]</span>[% END %]
+        </h1>
+        <ul>
+            [% FOREACH feature_link = features %]
+            <li>
+                Feature [% loop.count %]: [% feature_link.feature.name %]
+            </li>
+            [% END %]
+            [% IF subscription.number_of_users %]
+            <li>
+                Number of concurent users: [% subscription.number_of_users %]
+            </li>
+            [% END %]
+            <li>
+                [% IF trial %]Trial [% END %] Start Date: [% date.format( date.now, '%m/%d/%y' ) %]
+            </li>
+            <li>
+                [% IF trial %]Trial [% END %] End Date: [% date.format( end_time, '%m/%d/%y' ) %]
+            </li>
+        </ul>
+    </div>
+    <div class="spacer"></div>
+</form>
+<script type="text/javascript">
+$(function() {
+    var $form_inputs = $('#register-form input');
+    
+    $('#domain_check').on('keyup', function(e) {
+        e.preventDefault();
+        $('.checking_domain').remove();
+        var images = {
+            loader  : "/static/img/domain-load.gif",
+            error   : "/static/img/error_image.png",
+            success : "/static/img/tick_success.png"
+        };
+        
+        if ( !/^[a-z0-9]*$/g.test($('#domain_check').val()) ) {
+            $('.checking_domain').remove();
+            generate_domain_message( 'error', 'Domain name can not contain special characters', images.error );
+            return false;
+        }
+        if ( $('#domain_check').val().length > 0 ) {
+            generate_domain_message( 'loading', 'Looking up domain availability', images.loader );
+            $.ajax({
+                url : '/api/subscriptions/check_domain',
+                async : false,
+                dataType : 'json',
+                data : { domain_name : $('#domain_check').val() },
+                success : function(response, jqXHR, responseText) {
+                    if ( response.error ) {
+                        generate_domain_message('error', response.error, images.error);
+                    } else {
+                        generate_domain_message('success', response.success, images.success);
+                    }
+                },
+                error : function(response, jqXHR, responseText) {
+                    console.log(response);
+                }
+            });
+        }
+        });
+    
+    $('#continue_registration').unbind('click').on('click', function(ev) {
+        ev.preventDefault();
+        var errors = false;
+        $form_inputs.each(function() {
+            if ( !$(this).val() && $(this).attr('name') !== 'address2' ) {
+                generate_alert("error","Please fill in all the required fields");
+                errors = true;
+                
+                return false;
+            }           
+        });
+        if ( errors ) return false;
+        $.ajax({
+            url : '/api/subscriptions/register',
+            async : false,
+            dataType : 'json',
+            data : $('#register-form').serialize(),
+            success : function(response, jqXHR, responseText) {
+                if ( response.error ) {
+                    generate_alert('error', response.error);
+                } else {
+                    window.location = "[%success_page_return%]"
+                }
+            },
+            error : function(response, jqXHR, responseText) {
+                console.log(response);
+            }
+        });
+    });
+    function generate_alert( alert_type, alert_text ) {
+        $(".alert").remove();
+        
+        var modal_alert = '<div class="alert alert-'+ alert_type +' fade in" data-alert="alert">'+ alert_text +' <button type="button" class="close" data-dismiss="alert">&times;</button> </div>';
+        $(modal_alert).insertBefore('#register-form');
+    
+        return true;
+    }
+    function generate_domain_message( type, text, image ) {
+        $('.checking_domain').remove();
+        var text_color = ( type === 'error' ) ? 'red;' : 'green;';
+        $('<div class="checking_domain" style="margin-top:15px; padding-left:120px;color:' + text_color +'"><img src="'+ image +'" /><small>'+ text +'</small></div>').insertAfter('#domain');
+    }
+});
+</script>

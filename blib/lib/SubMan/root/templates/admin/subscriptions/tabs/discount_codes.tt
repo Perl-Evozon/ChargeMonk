@@ -1,0 +1,94 @@
+<style type="text/css">
+	#campaign_details { width:70%; float:left; }
+    #edit_controls { width:30%; display:none; float:left; line-height: 3em; text-align: center;}
+</style>
+
+[% IF NOT simulate_modal_campaign %]
+    [% INCLUDE include/common/alerts.tt %]
+[% END %]
+
+[% INCLUDE admin/subscriptions/tabs/discount_codes/create_campaign.tt %]
+[% INCLUDE admin/subscriptions/tabs/discount_codes/generate_codes.tt %]
+
+<div id="campaign_details">
+    <table class="table table-hover table-bordered table-striped data-table">
+        [% IF campaigns.size > 0 %]
+        <tr>
+            <th>Campaign:</th>
+            <th width="70%">
+                <select name="campaigns" id="campaigns" style="width:100%">
+                        [% FOREACH cmp IN campaigns %]
+                            <option value="[% cmp.id %]" [% IF cmp.id == campaign_id %] selected="selected" [% END %] > [% cmp.name %] </option>
+                        [% END %]
+                </select>
+            </th>
+        </tr>
+        [% FOREACH cmp IN campaigns %]
+            [% IF cmp.id == campaign_id %]
+            <tr>
+                <td>Start date:</td>
+                <td>[% cmp.start_date %]</td>
+            </tr>
+            <tr>
+                <td>End date:</td>
+                <td>[% cmp.end_date %]</td>
+            </tr>
+            <tr>
+                <td>Discount type:</td>
+                <td>[% cmp.discount_type %]</td>
+            </tr>
+            <tr>
+                <td>Discount amount:</td>
+                <td>[% cmp.discount_amount %]</td>
+            </tr>
+            <tr>
+                <td>Valid until:</td>
+                <td>[% cmp.valability %]</td>
+            </tr>
+            [% END %]
+        [% END %]
+        [% ELSE %]
+            <tr><td colspan="2">No campaigns created yet.</td></tr>
+        [% END %]
+    </table>
+</div>
+
+    <div id="edit_controls">
+        <a href="#">
+            <button class="btn" id="add_campaign_btn" ><i class="icon icon-plus"></i> Create campaign </button>
+        </a>
+        [% IF campaigns.size > 0 %]
+        <a href="#">
+            <button class="btn" id="generate_codes_btn" ><i class="icon icon-plus"></i> Generate codes </button>
+        </a>
+        [% END %]
+    </div>
+
+[% INCLUDE admin/subscriptions/tabs/discount_codes/codes.tt %]
+
+<script type="text/javascript">
+
+$(document).ready( function(){
+
+    if ((/save|add|edit|update/.test(window.location.pathname))) {
+        $("#edit_controls").show();
+    }
+
+    $("#campaigns").on('change', function() {
+        $('#discount_codes').load("/admin/subscriptions/tabs/discount_codes/"+[% subscription_id %]+"?campaign_id="+$("#campaigns").val()+'&added_campaigns='+$('#added_campaigns').val());
+    });
+
+    $('#add_campaign_btn').on('click', function( e ) {
+        $('#overlay').fadeIn();
+        $('#create_campaign').fadeIn();
+        return false;
+    });
+
+    $('#generate_codes_btn').on('click', function( e ) {
+        $('#overlay').fadeIn();
+        $('#generate_codes').fadeIn();
+        return false;
+    });
+});
+
+</script>

@@ -1,0 +1,68 @@
+[% WRAPPER 'layouts/default.tt' %]
+[% USE date;
+   current_date = date.format( date.now, '%Y-%m-%d' ).split('-');
+   end_date
+    = date.calc.Add_Delta_Days(
+        current_date.0,
+        current_date.1,
+        current_date.2,
+        ( trial ? subscription.trial_period : subscription.period )
+    );
+   end_time = date.calc.Date_to_Time( end_date.0, end_date.1, end_date.2, '00', '00', '00' );
+%]
+
+<form class="registration" method="post" autocomplete="off" action="">
+    <div class="row cf">
+        <h1 class="step-name">
+            [% subscription.subscription_group.name %] [% subscription.name %] Subscription
+            [% IF trial %]Trial[% END %]
+            <sup><a href="/pricing">(change)</a></sup>
+        </h1>
+        <div class="register-steps cf">
+            <div class="step active">
+                <i>1</i>
+                <span>Personal Info</span>
+            </div>
+            <div class="step">
+                <i>2</i>
+                <span>Credit Card Info</span>
+            </div>
+            <div class="step">
+                <i>3</i>
+                <span>Confirmation</span>
+            </div>
+        </div>
+    </div>
+        
+    <div class="form-data">
+        Please verify your email address.
+    </div>
+    <div class="description">
+        <h1>
+            [% subscription.name %] Subscription[% IF trial %] Trial[% END %]
+            [% IF NOT trial %][% subscription.currency %] <span class="price">[% subscription.price %]</span>[% END %]
+        </h1>
+        <ul>
+            [% FOREACH feature_link = features %]
+            <li>
+                Feature [% loop.count %]: [% feature_link.feature.name %]
+            </li>
+            [% END %]
+            [% IF subscription.number_of_users %]
+            <li>
+                Number of concurent users: [% subscription.number_of_users %]
+            </li>
+            [% END %]
+            <li>
+                [% IF trial %]Trial [% END %] Start Date: [% date.format( date.now, '%m/%d/%y' ) %]
+            </li>
+            <li>
+                [% IF trial %]Trial [% END %] End Date: [% date.format( end_time, '%m/%d/%y' ) %]
+            </li>
+        </ul>
+    </div>
+    <div class="spacer"></div>
+</form>
+
+[% END %]
+

@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+    <head>
+        <title>Administrator Panel</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link href='//fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,400,600italic,600' rel='stylesheet' type='text/css'>
+
+        <link href="/static/css/bootstrap3.css" rel="stylesheet">
+        <link href="/static/css/datepicker.css" rel="stylesheet">
+        <link href="/static/css/select2.css" rel="stylesheet">
+        <!-- Font awesome CSS -->
+        <link href="/static/css/font-awesome.min.css" rel="stylesheet">
+        <link href="/static/css/subman.css" rel="stylesheet">
+        <link href="/static/css/style.css" rel="stylesheet">
+        <link href="/static/css/custom.css" rel="stylesheet">
+
+        [% IF (default_theme && (default_theme.id > 1)) %]
+            <link type="text/css" href="/static/themes/[% default_theme.css_file %]" rel="stylesheet" />
+        [% END %]
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <script src="/static/js/jquery.ui.custom.js"></script>
+        <script src="/static/js/jquery.peity.min.js"></script>
+        <!-- <script src="/static/js/jquery.gritter.min.js"></script> -->
+        <!-- <script src="/static/js/jquery.uniform.js"></script>-->
+        <script src="/static/js/bootstrap3.js"></script>
+        <script src="/static/js/bootstrap-datepicker.js"></script>
+        <script src="/static/js/select2.min.js"></script>
+        <script src="/static/js/subman.js"></script>
+        <script src="/static/js/custom.js"></script>
+        <script src="/static/js/Chart.js"></script>
+    </head>
+
+    <body>
+        <header class="header">
+            <div class="cf">
+                <div class="col-md-3">
+                  <!-- Logo -->
+                  <div class="logo">
+                     <h1><a href="/admin/dashboard">Admin Panel</a></h1>
+                  </div>
+               </div>
+               <div class="col-md-9">
+                   <div id="user-nav" class="navbar navbar-inverse" role="banner">
+                        <div class="navbar-header">
+                            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                              <span>Options</span>
+                            </button>
+                        </div>
+                        <nav class="collapse navbar-collapse bs-navbar-collapse navbar-right" role="navigation">
+                            <ul class="nav navbar-nav">
+
+                                <li class="btn [% IF c.request.path.match('admin/profile' _ '.*') %] active [% END %]" ><a title="" href="/admin/profile"><i class="icon icon-user"></i> <span class="text">Profile</span></a></li>
+                                <li class="btn "><a title="" href="/logout"><i class="icon icon-share-alt"></i> <span class="text">Logout</span></a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+
+[% sidebar = [
+    { path => 'admin/dashboard',   name => 'Dashboard',        class => 'icon icon-home', default => 1  },
+    { path => 'admin/users',       name => 'Users',            class => 'icon icon-user'  },
+    { path => '#',                  name => 'Subscriptions',   class => 'icon icon-repeat',
+            items => '2',
+            submenu => [
+                { path => 'admin/subscriptions',   name => 'Subscriptions',    class => ''},
+                { path => 'admin/features',        name => 'Features',         class => ''}
+            ]
+    },
+    { path => '#',                  name => 'Settings',         class => 'icon icon-cog',
+            items => '3'
+            submenu => [
+                { path => 'admin/themes',          name => 'Themes',               class => ''},
+                { path => 'admin/registration',    name => 'Registration',         class => ''},
+                { path => 'admin/gateway',         name => 'Payment Gateways',     class => ''}
+            ]
+    }
+   ]
+%]
+        <div class="page-content blocky">
+            <div class="sidebar-dropdown"><a href="#">MENU</a></div>
+              <div class="sidey">
+                 <div class="side-cont">
+                    <ul class="nav">
+                        [% FOREACH opt IN sidebar %]
+                            [% IF opt.submenu %]
+                            <li class="has_submenu [% FOREACH submenu IN opt.submenu %] [% IF c.request.path.match(submenu.path _ '.*') %] current open [% END %] [% END %]">
+                                <a href="[% opt.path %]"><i class="[% opt.class %]"></i><span>[% opt.name %]</span><span class="caret"></span><span class="badge">[% opt.items %]</span></a>
+                                <ul>
+                                [% FOREACH submenu IN opt.submenu %]
+                                    <li [% IF c.request.path.match(submenu.path _ '.*') %] class="active" [% END %]><a href="/[% submenu.path %]">[% submenu.name %]</a></li>
+                                [% END %]
+                                </ul>
+                            </li>
+                            [% ELSE %]
+                                <li [% IF (!c.request.path && opt.default) || c.request.path.match(opt.path _ '.*') %] class='current' [% END %]><a href="/[% opt.path %]"><i class="[% opt.class %]"></i> <span>[% opt.name %]</span></a></li>
+                            [% END %]
+                        [% END %]
+                    </ul>
+
+                 </div>
+              </div>
+
+            <div id="content" class="mainy">
+                [% content %]
+            </div>
+        </div>
+        <!-- Scroll to top -->
+      <span class="totop"><a href="#"><i class="icon-chevron-up"></i></a></span>
+    </body>
+</html>

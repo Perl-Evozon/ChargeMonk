@@ -1,0 +1,3 @@
+Run script/chargemonk_server.pl to test the application.
+Create admin user using script/chargemonk_create_admin.pl
+

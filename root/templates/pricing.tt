@@ -1,0 +1,148 @@
+<link type="text/css" href="/static/css/public/styles.css" rel="stylesheet" />
+<link type="text/css" href="/static/css/bootstrap-datepicker.css" rel="stylesheet" />
+<link type="text/css" href="/static/css/public/pricing.css" rel="stylesheet" />
+<link type="text/css" href="/static/css/public/animated.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/js/modal-responsive-fix.js"></script>
+<script type="text/javascript" src="/static/js/formretain.js"></script>
+<script type="text/javascript" src="/static/js/validator.js"></script>
+<script type="text/javascript" src="/static/js/touchscroll.js"></script>
+<script type="text/javascript" src="/static/js/contactUs.js"></script>
+<script type="text/javascript" src="/static/js/cookie/jquery.cookie.js"></script>
+
+<div class="container">
+
+[% IF groups.size > 1 %]
+    <ul class="nav nav-tabs">
+    [% FOREACH group = groups %]
+        <li[% IF loop.first %] class="active"[% END %]>
+            <a href="#group-[% group.rs.id %]" data-toggle="tab">
+                [% group.rs.name %]
+            </a>
+        </li>
+    [% END %]
+    </ul>
+[% END %]
+
+    <div class="tab-content">
+        [% FOREACH group = groups %]
+        <div id="group-[% group.rs.id %]" class="group tab-pane[% IF loop.first %] active[% END %]">
+            [% FOREACH subscription = group.subscriptions %]
+                [% IF subscription.rs.is_visible %]
+            <div class="subscription">
+                <div class="name">
+                    [% subscription.rs.name %]
+                </div>
+                <ul class="features">
+                [% FOREACH subscription_feature = subscription.features %]
+                    <li>[% subscription_feature.feature.name %]</li>
+                [% END %]
+                </ul>
+                <div class="bottom">
+                    <div class="price">
+                        <span>
+                            <span class="the-price">[% subscription.rs.price %]</span> <span class="the-currency">[% subscription.rs.currency %]</span>
+                        </span>
+                    </div>
+                    <div class="period">
+                        [% subscription.rs.period_count %] [% subscription.rs.period_unit %][% IF subscription.rs.period_count >= 1 %]s[% END %]
+                    </div>
+                    <button class="btn btn-success" data-action="register" value="[% subscription.rs.id %]">[% subscription.rs.call_to_action %]</button>
+                    <div class="trial">
+                    [% IF subscription.rs.has_trial %]
+                        <button class="btn btn-small" data-action="register_trial" value="[% subscription.rs.id %]">Take a [% subscription.rs.trial_period_count %] [% subscription.rs.trial_period_unit %][% IF subscription.rs.trial_period_count > 1 %]s[% END %] Free Trial</button>
+                    [% ELSE %]
+                        &nbsp;
+                    [% END %]
+                    </div>
+                </div>
+            </div>
+                [% END %]
+            [% END %]
+        </div>
+        [% END %]
+    </div>
+</div>
+
+<div id="descriptions">
+    <div class="description">
+        <img src="" alt="" />
+        <h1>Lorem ipsum</h1>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis felis
+            diam, luctus sed vehicula eu, tincidunt a sapien. Sed ullamcorper
+            semper cursus. Etiam massa ipsum, vehicula quis tempor id, fringilla eu
+            ipsum. Curabitur vel massa vel leo placerat suscipit. Nulla nec leo
+            quam, non interdum mauris. Aliquam sit amet arcu ante. Curabitur
+            imperdiet, nisi eget rhoncus iaculis, mi elit posuere ligula, vitae
+            sagittis mi arcu at nisl.
+        </p>
+    </div>
+    <div class="description">
+        <img src="" alt="" />
+        <h1>Lorem ipsum</h1>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis felis
+            diam, luctus sed vehicula eu, tincidunt a sapien. Sed ullamcorper
+            semper cursus. Etiam massa ipsum, vehicula quis tempor id, fringilla eu
+            ipsum. Curabitur vel massa vel leo placerat suscipit. Nulla nec leo
+            quam, non interdum mauris. Aliquam sit amet arcu ante. Curabitur
+            imperdiet, nisi eget rhoncus iaculis, mi elit posuere ligula, vitae
+            sagittis mi arcu at nisl.
+        </p>
+    </div>
+    <div class="description">
+        <img src="" alt="" />
+        <h1>Lorem ipsum</h1>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis felis
+            diam, luctus sed vehicula eu, tincidunt a sapien. Sed ullamcorper
+            semper cursus. Etiam massa ipsum, vehicula quis tempor id, fringilla eu
+            ipsum. Curabitur vel massa vel leo placerat suscipit. Nulla nec leo
+            quam, non interdum mauris. Aliquam sit amet arcu ante. Curabitur
+            imperdiet, nisi eget rhoncus iaculis, mi elit posuere ligula, vitae
+            sagittis mi arcu at nisl.
+        </p>
+    </div>
+    <div class="description">
+        <img src="" alt="" />
+        <h1>Lorem ipsum</h1>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis felis
+            diam, luctus sed vehicula eu, tincidunt a sapien. Sed ullamcorper
+            semper cursus. Etiam massa ipsum, vehicula quis tempor id, fringilla eu
+            ipsum. Curabitur vel massa vel leo placerat suscipit. Nulla nec leo
+            quam, non interdum mauris. Aliquam sit amet arcu ante. Curabitur
+            imperdiet, nisi eget rhoncus iaculis, mi elit posuere ligula, vitae
+            sagittis mi arcu at nisl.
+        </p>
+    </div>
+
+    <div class="spacer"></div>
+</div>
+
+[% INCLUDE include/register_modal.tt %]
+
+<script type="text/javascript">
+$(document).ready( function () {
+    $('.bottom').unbind('click').on('click','[data-action="register"]', function(e){
+        var $form_inputs = $('#register-form input'),
+            $target = $(e.target);
+        e.preventDefault();
+        window.location = 'http://subscriptions.thepearlbee.com/register.html?sid=' + $target.val();
+    });
+    $('.bottom').unbind('click').on('click','[data-action="register_trial"]', function(e){
+        var $form_inputs = $('#register-form input'),
+            $target = $(e.target);
+        e.preventDefault();
+        window.location = 'http://subscriptions.thepearlbee.com/register.html?sid=' + $target.val() + "&trial=1";
+    });
+    function generate_alert( alert_type, alert_text ) {
+        $(".alert").remove();
+        
+        var modal_alert = '<div class="alert alert-'+ alert_type +' fade in" data-alert="alert"><small>'+ alert_text +'</small> <button type="button" class="close" data-dismiss="alert">&times;</button> </div>';
+        $(modal_alert).insertAfter('#register_modal_header');
+    
+        return true;
+    }
+});
+</script>

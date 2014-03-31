@@ -1,0 +1,41 @@
+[% WRAPPER $wrapper %]
+
+<div id="content-header">
+	<h1>
+		Choose subscription to upgrade to
+	</h1>
+</div>
+
+[% INCLUDE include/common/alerts.tt %]
+
+
+<div class="container-fluid">
+	<form method="post" action="/common/subscriptionactions/upgrade/[% c.request.arguments.0 %]/[% c.request.arguments.1 %]">
+	 	 <div class="control-group">
+	 	 	<table>
+				<th>
+					Subscrption name:
+				</th>
+        [% FOREACH subscription IN subscriptions %]
+	 	 		<tr>
+	 	 			<td>
+	 	 				<label class="control-label">[% subscription.subscription_upgrade.name %]</label>
+						<div class="controls">
+								<input type="radio" name="subscription" checked="" value="[% subscription.subscription_upgrade.id %]" >
+						</div>
+					</td>
+        </tr>
+        [% END %]
+	 	 	</table>
+	 	 </div>
+			<div class="center">
+			 <button class="btn" type="submit"><i class="icon icon-ok"></i> Next</button>
+			 &nbsp;or&nbsp;
+			 <a href="#" onclick="goBack();">Cancel</a>
+		 </div>
+
+    </form>
+</div>
+
+[% END %]
+

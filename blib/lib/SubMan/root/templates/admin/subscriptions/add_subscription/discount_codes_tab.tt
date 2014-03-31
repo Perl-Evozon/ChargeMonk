@@ -1,0 +1,121 @@
+<style type="text/css">
+
+#create_campaign {
+    display: none;
+    z-index: 500;   
+    position: absolute;
+    width:70%;
+    left: 16%;
+    top: 20%;
+}
+
+#create_campaign .content{
+    background:#fff;
+    padding: 20px;
+}
+#create_campaign .popup{
+    border-radius: 7px;
+    background:#6b6a63;
+    margin:10px auto 0;
+    padding:6px;  
+    position:absolute;
+    width: 100%;
+}
+#create_campaign em{
+    font-style: normal;
+}
+
+</style>
+
+[% IF NOT simulate_modal_campaign %]
+    [% INCLUDE include/common/alerts.tt %]
+[% END %]
+
+[% INCLUDE admin/subscriptions/add_subscription/discount_codes_tab/create_campaign.tt %]
+
+<div id="add_subscr_campaigns">
+    <label class="control-label">Select campaign: </label>
+    <div class="controls">
+    	<select name="campaigns" id="campaigns">
+            [% FOREACH campaign IN campaigns %]
+                <option value="[% campaign.id %]"> [% campaign.name %] </option>
+            [% END %]
+    	</select>
+
+    	<a href="#" class="pull-right">
+        	<button class="btn" id="campaign_btn" ><i class="icon icon-plus"></i> Create campaign </button>
+        </a>
+    </div>
+
+    <div id="table_container">
+        <table id="campaigns_table" class="table table-hover table-striped table-bordered data-table">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Username</th>
+                    <th>Start date</th>
+                    <th>Redeem date</th>
+                </tr>
+            </thead>
+            <tbody>
+               
+            </tbody>
+        </table>
+    </div>        
+
+    <a href="#">
+        <button class="btn" id="generate_codes_btn"><i class="icon icon-plus"></i> Generate codes </button>
+    </a>
+</div>
+
+<script type="text/javascript">
+
+
+$(document).ready(function($) {
+    window.currently_selected_campaign = window.currently_selected_campaign || 0;
+    if (currently_selected_campaign) {
+        $('#campaigns').val(currently_selected_campaign);
+    }
+
+    if ( [% simulate_modal_campaign || 0 %] == 1 ) {
+        $('#campaign_btn').trigger('click');
+    }
+
+    $('#campaigns').on('change', function() {
+        $('#campaigns_table tbody tr').remove();
+        currently_selected_campaign = $(this).val();
+
+        var campaign_start_date = "";
+        var campaign_end_date = "";
+
+        [% FOREACH campaign IN campaigns %]
+            if ( $(this).val() == '[% campaign.id %]') {
+                campaign_start_date = '[% campaign.start_date.day %]/[% campaign.start_date.month %]/[% campaign.start_date.year %]';
+                campaign_end_date   = '[% campaign.end_date.day %]/[% campaign.end_date.month %]/[% campaign.end_date.year %]';
+            }
+        [% END %]
+
+        [% FOREACH code IN codes %]
+            if ( $(this).val() == '[% code.campaign_id %]') {
+                $('#campaigns_table').append('<tr><td> [% code.code %] </td><td>[% code.username %] </td><td>' + campaign_start_date + '</td><td>' + campaign_end_date + '</td></tr>');
+            }
+        [% END %]
+    });
+
+    $('#generate_codes_btn').on('click', function() {
+        $.post('add_subscription/discount_codes_tab/Default', { generate_codes_btn: 1, campaign_id: $('#campaigns').val() }, function(data, textStatus, xhr) {
+            console.log(data);
+            $('#discount_codes').html(data);
+        });
+        
+        return false;
+    });
+
+    if ( [% campaign_id || 0 %] > 0 ) {
+        $('#campaigns').val( [% campaign_id %] );
+        $('#campaigns').trigger('change');
+    }
+
+});
+
+</script>

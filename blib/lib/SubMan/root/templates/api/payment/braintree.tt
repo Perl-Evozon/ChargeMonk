@@ -1,0 +1,109 @@
+[% USE date;
+   current_date = date.format( date.now, '%Y-%m-%d' ).split('-');
+%]
+
+<div id="price"><strong>Price:</strong> [% subscription.price %] [% subscription.currency %] </div>
+<form role="form" id="braintree-payment-form" class="registration">
+    
+    <div class="row cf">
+        <div class="cf pull-left">
+          <img class="pull-left" alt="" src="/static/img/braintree.png">
+        </div>
+        <div class="register-steps cf">
+            <div class="step">
+                <i>1</i>
+                <span>Personal Info</span>
+            </div>
+            <div class="step active">
+                <i>2</i>
+                <span>Credit Card Info</span>
+            </div>
+        </div>
+    </div>    
+    
+    <div class="form-group">
+        <input type="hidden" name="token" value="[%token%]">
+    </div>
+    <div class="form-group">
+        <label for="credit_card_name">Name on card:</label>
+        <input id="name" class="form-control" type="text" autocomplete="off" data-encrypted-name="name" />
+    </div>
+    <div class="form-group">
+        <label for="credit_card_number">Card number:</label>
+        <input id="number" class="form-control" type="text" autocomplete="off" data-encrypted-name="number"/>
+    </div>
+    <div class="form-group">
+        <label for="credit_card_cvv2">CVV2:</label>
+        <input id="cvv" class="form-control" type="text"  autocomplete="off" data-encrypted-name="cvv" />
+    </div>
+    <div class="form-group">
+        <label for="credit_card_expiration">Expiration date(mm/yyyy):</label>
+        <select id="month" data-encrypted-name="month" style="width:136px;">
+            [% FOREACH month_number IN [ '01' .. '12' ] %]
+                <option value="[%month_number%]">[%month_number%]</option>
+            [% END %]
+        </select>
+            /
+        <select id="year" data-encrypted-name="year" style="width:165px;">
+            [% FOREACH year_number IN [ current_date.0 .. 2100  ] %]
+                <option value="[%year_number%]">[%year_number%]</option>
+            [% END %]
+        </select>
+    </div>
+    <div class="form-group right">
+        <button id="submit_braintree" class="btn btn-success">Confirm</button>
+    </div>
+</form>
+
+<script type="text/javascript">
+$(function() {
+    $("#submit_braintree").on('click', function(ev) {
+        ev.preventDefault();
+        var $form = $("#braintree-payment-form");
+        var current_month = "[%current_date.1%]";
+        if ( !$('#name').val() ) {
+            generate_alert( 'error_name', 'Name field can not be empty' );
+            return false;
+        } else if ( !$('#number').val() || !$.isNumeric( $('#number').val() ) || $('#number').val().toString().length !== 16 ) {
+            generate_alert( 'error_number','Card number appears to be invalid. The number should be composed of 16 digits, no spaces: "xxxxxxxxxxxxxxxx"' );
+            return false;
+        } else if ( !$('#cvv').val() || !$.isNumeric( $('#cvv').val() ) || $('#cvv').val().toString().length !== 3 ) {
+            generate_alert( 'error_cvv', 'CVV code appears to be invalid. The code should be composed of 3 digits ussaly marked on the back of the card' );
+            return false;
+        } else if ( parseInt($("#month").find(":selected").val()) < parseInt(current_month) ) {
+            generate_alert( 'error_month', 'Expiration date can not be earlier than current date' );
+            return false;
+        }
+        
+        var braintree = Braintree.create("[% gateway_credentials.client_side_encryption_key %]");
+        braintree.encryptForm($form);
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: '/api/subscriptions/payment',
+            dataType: 'json',
+            data: $form.serialize(),
+            success: function(response, textStatus, jqXHR){
+                if ( response.success ) {
+                    generate_alert('success', response.success);
+                    window.location = "[%finish_register_page%]";
+                } else {
+                    generate_alert('error', response.error);
+                }
+            },
+            error: function(response, textStatus, jqXHR) {
+                generate_alert('error', 'There has been an error while processing the data. Please contact support');
+            }
+        });
+    });
+    
+    function generate_alert(type, alert_text) {
+        $(".alert").remove();
+        
+        var alert = '<div class="alert alert-'+ type +' fade in" data-alert="alert">'+ alert_text +' <button type="button" class="close" data-dismiss="alert">&times;</button> </div>';
+        $(alert).insertBefore('#price');
+    
+        return true;
+    }
+})  
+</script>

@@ -1,0 +1,5 @@
+TRUNCATE "public".subscription_upgrades_to, "public".subscription_downgrades_to;
+ALTER TABLE "public".subscription_upgrades_to DROP CONSTRAINT "subscription_upgrades_to_subscription_upgrade_id_fkey", ADD CONSTRAINT "subscription_upgrades_to_subscription_upgrade_id_fkey" FOREIGN KEY ("subscription_upgrade_id") REFERENCES "public"."subscription" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "public".subscription_upgrades_to ADD CONSTRAINT "subscription_upgrades_to_subscription_id_fkey" FOREIGN KEY ("subscription_id") REFERENCES "public"."subscription" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "public".subscription_downgrades_to DROP CONSTRAINT "subscription_downgrades_to_subscription_downgrade_id_fkey", ADD CONSTRAINT "subscription_downgrades_to_subscription_downgrade_id_fkey" FOREIGN KEY ("subscription_downgrade_id") REFERENCES "public"."subscription" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "public".subscription_downgrades_to ADD CONSTRAINT "subscription_downgrades_to_subscription_id_fkey" FOREIGN KEY ("subscription_id") REFERENCES "public"."subscription" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;

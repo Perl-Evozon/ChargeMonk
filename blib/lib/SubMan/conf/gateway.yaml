@@ -1,0 +1,20 @@
+---
+default: braintree
+gateways:
+  authorize:
+    api_login_id: 53RUa7cC
+    secret_answer: Simon
+    test_mode: 3
+    transaction_key_id: 3278TGd836JfbhSQ
+  braintree:
+    client_side_encryption_key: MIIBCgKCAQEAorqjy6lKI/aKqYH56lOcOj2TkftQW0W8mw2pigJ6l4MZj3dDAnvghudAPLslo+nudRZ7kZHmcfnQi5//c9H5NqyuGrZTWmZDvgagslRDxEKxHvrXEfRBHbTyRhApKhhpUhIb3fGU9StP30qa75iw9NSZje8y4weJEthttHBTsmp3qzbpa6qRKKnYKnJpo4Mn48+yWuljYhKvLPWoSIt9fR3+VYdVAOepdyT/+ePXoY1ZH7c72eaGNXOaGo6BT1Sy10Kg4ZDxyN4eY7KN4MTA1D7vDNYxqkmBXYX1HnbBKkExRHrJGIATk2ION5U5xd+CIg1WgnD8c8ZoFR7i2gF8TwIDAQAB
+    merchant_id: 4ppjv4q4yszfj662
+    private_key: 91df4e7b768004aea292270852142e9c
+    public_key: w3vx2pj877dknkp5
+  google checkout:
+    merchant_id: test_id1
+    private_key: private_key1
+    public_key: pub_1
+  stripe:
+    publishable_key: pk_test_ofrt4TqpAHUHI2hMrocBS3mo
+    secret_key: sk_test_hW9r8WSQME6YudrD8HzMbOCY

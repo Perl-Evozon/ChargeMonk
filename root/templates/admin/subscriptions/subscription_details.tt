@@ -1,0 +1,234 @@
+[% WRAPPER layouts/admin.tt %]
+
+[% USE date(format = '%B %d, %Y') %]
+[% USE Number.Format( THOUSANDS_SEP => ',' ) %]
+
+
+<script src="/static/js/bootstrap-tab.js"></script>
+<script src="/static/js/jquery.dataTables.min.js"></script>
+
+<div id="content-header">
+        <h1>
+            [% subscription.name %]
+            <em style="font-size:14px; display: block;">
+                [% dt = subscription.created %]
+                [% dt = dt | replace('T', ' ') %]
+                Created by [% subscription.created_by %] on [% date.format(dt) %]
+            </em>
+        </h1>
+
+        <a href="/admin/subscriptions/edit_subscription/[% subscription.id %]">
+                <button class="btn btn-info" id="edit_subscr_btn"><i class="icon icon-edit"></i> Edit subscription </button>
+        </a>
+</div>
+
+<hr>
+
+[% INCLUDE include/common/alerts.tt %]
+
+<div>
+    <div class="row-fluid">
+        <table id="subscription_details_table">
+            <tr>
+                <td><label>Subscription Name:</label></td>
+                <td><label>[% subscription.name %]</label></td>
+            </tr>
+            <tr>
+                <td><label>Subscription Type:<i class="icon-grey icon-question-sign tip-bottom" data-original-title="The type of the subscrition (Regular or Promo)."></i></label></td>
+                <td><label>[% subscription.type FILTER ucfirst %]</label></td>
+            </tr>
+            <tr>
+                <td><label>Subscription Group:<i class="icon-grey icon-question-sign tip-bottom" data-original-title="The group from which the current subscription is part of."></i></label></td>
+                <td><label>[% group.name %]</label></td>
+            </tr>
+            <tr>
+                <td><label>Visibility:<i class="icon-grey icon-question-sign tip-bottom" data-original-title="This sets wether the subscription is visible and available for all users."></i></label></td>
+                <td>
+                    <label><input type="radio" [% subscription.is_visible ? 'checked="true"' : '' %] disabled/> Public</label>
+                    <label><input type="radio" [% ! subscription.is_visible ? 'checked="true"' : '' %] disabled/> Admin only</label>
+                </td>
+            </tr>
+            <tr>
+                <td><label>Company data?<i class="icon-grey icon-question-sign tip-bottom" data-original-title="This states wether company data is required or not."></i></label></td>
+                <td>
+                    <label><input type="radio" [% subscription.require_company_data ? 'checked="true"' : '' %] disabled/> Yes</label>
+                    <label><input type="radio" [% ! subscription.require_company_data ? 'checked="true"' : '' %] disabled/> No</label>
+                </td>
+            </tr>
+            <tr>
+                <td><label>Auto-renew?<i class="icon-grey icon-question-sign tip-bottom" data-original-title="This states wether Auto-Renew is activated for current subscription."></i></label></td>
+                <td>
+                    <label><input type="radio" [% subscription.has_auto_renew ? 'checked="true"' : '' %] disabled/> Yes</label>
+                    <label><input type="radio" [% ! subscription.has_auto_renew ? 'checked="true"' : '' %] disabled/> No</label>
+                </td>
+            </tr>
+            <tr>
+                <td><label>Access:<i class="icon-grey icon-question-sign tip-bottom" data-original-title="This is the Access Type for this subscription."></i></label></td>
+                <td><label>[% subscription.access_type FILTER ucfirst | replace('_', ' ') %]</label></td>
+            </tr>
+            <tr>
+                <td><h5> Subscription Configuration </h5></td>
+            </tr>
+            [% IF subscription.type == 'regular' %]
+                <tr>
+                    <td><label>Period:</label></td>
+                    <td><label>[% subscription.period_count %] [% subscription.period_unit %][% subscription.period_count > 1 ? 's' : '' %]</label></td>
+                </tr>
+                <tr>
+                    <td><label>Price:</label></td>
+                    <td><label>[% subscription.price %] [% subscription.currency %]</label></td>
+                </tr>
+            [% END %]
+            [% IF subscription.access_type == 'period_users' %]
+                <tr>
+                    <td><label>Number of concurrent users:</label></td>
+                    <td><label>From: [% subscription.min_active_period_users %] To: [% subscription.max_active_period_users %]</label></td>
+                </tr>
+            [% END %]
+            [% IF subscription.access_type == 'resources' %]
+                <tr>
+                    <td><label>Resource Type:</label></td>
+                    <td><label>[% subscription.resource_type %]</label></td>
+                </tr>
+                <tr>
+                    <td><label>Resource quantity:</label></td>
+                    <td><label>From: [% subscription.min_resource_quantity %] To: [% subscription.max_resource_quantity %]</label></td>
+                </tr>
+            [% END %]
+            [% IF subscription.access_type == 'IP_range' %]
+                <tr>
+                    <td><label>Number of concurrent IPs:</label></td>
+                    <td><label>From: [% subscription.min_active_ips %] To: [% subscription.max_active_ips %]</label></td>
+                </tr>
+            [% END %]
+            [% IF subscription.access_type == 'API_calls' %]
+                <tr>
+                    <td><label>Volume:</label></td>
+                    <td><label>[% subscription.api_calls_volume %]</label></td>
+                </tr>
+            [% END %]
+            <tr>
+                <td><label>Call To Action:<i class="icon-grey icon-question-sign tip-bottom" data-original-title="The call message which will be displayed on subscription's presentation.(e.g.: Subscribe Now)"></i></label></td>
+                <td><label><i>"[% subscription.call_to_action %]"</i></label></td>
+            </tr>
+            [% IF subscription.type == 'regular' %]
+                <tr>
+                    <td><label>Has trial?</label></td>
+                    <td>
+                        <label><input type="radio" [% subscription.has_trial ? 'checked="true"' : '' %] disabled/> Yes</label>
+                        <label><input type="radio" [% ! subscription.has_trial ? 'checked="true"' : '' %] disabled/> No</label>
+                    </td>
+                </tr>
+            [% END %]
+            [% IF subscription.type == 'promo' || subscription.has_trial %]
+                <tr>
+                    <td><h5> Trial Options </h5></td>
+                </tr>
+                <tr>
+                    <td><label>Period:</label></td>
+                    <td><label>[% subscription.trial_period_count %] [% subscription.trial_period_unit %][% subscription.trial_period_count > 1 ? 's' : '' %]</label></td>
+                </tr>
+                <td><label>Require credit card?</label></td>
+                    <td>
+                        <label><input type="radio" [% subscription.require_credit_card ? 'checked="true"' : '' %] disabled/> Yes</label>
+                        <label><input type="radio" [% ! subscription.require_credit_card ? 'checked="true"' : '' %] disabled/> No</label>
+                    </td>
+                <tr>
+                    <td><label>Price:</label></td>
+                    <td><label>[% subscription.trial_price || 0 %] [% subscription.trial_currency %]</label></td>
+                </tr>
+            [% END %]
+        </table>
+        <div id="add_subscr_data_tabs" style="margin-left: 0">
+            <ul id="myTab" class="nav nav-tabs">
+                <li><a href="#features" data-toggle="tab">Features</a></li>
+                <li><a href="#group" data-toggle="tab">Group</a></li>
+                <li><a href="#upgrade" data-toggle="tab">Upgrade</a></li>
+                <li><a href="#downgrade" data-toggle="tab">Downgrade</a></li>
+                <li><a href="#discount_codes" data-toggle="tab">Discount codes</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="features" class="tab-pane">
+                    <label class="chargemonk_info_label">These are the subscription features in the order they appear.</label>
+                    <table>
+                    [% FOREACH link IN link_subscriptions_features %]
+                        [% FOREACH feat IN features %]
+                            [% IF feat.id == link.feature_id %]
+                                <label>
+                                    <input type="text" class="details_textbox" value="[% feat.name %]" readonly/>
+                                </label>
+                            [% END %]
+                        [% END %]
+                    [% END %]
+                    </table>
+                </div>
+                <div id="group" class="tab-pane">
+                    <label class="chargemonk_info_label">This is the order of the subscriptions in the group.</label>
+                    <table>
+                    [% FOREACH subscr IN subscriptions_from_group.sort('position_in_group') %]
+                        <label>
+                            <input type="text" class="details_textbox" value="[% subscr.name %]" readonly/>
+                        </label>
+                    [% END %]
+                    </table>
+                </div>
+                <div id="upgrade" class="tab-pane">
+                    <label class="chargemonk_info_label">These are the subscriptions to which this subscription can be upgraded.</label>
+                    <table>
+                    [% FOREACH upgr IN upgrades %]
+                        [% FOREACH subscr IN subscriptions_from_group %]
+                            [% IF subscr.id == upgr.subscription_upgrade_id %]
+                                <label>
+                                    <input type="text" class="details_textbox" value="[% subscr.name %]" readonly/>
+                                </label>
+                            [% END %]
+                        [% END %]
+                    [% END %]
+                    </table>
+                </div>
+                <div id="downgrade" class="tab-pane">
+                    <label class="chargemonk_info_label">These are the subscriptions to which this subscription can be downgraded.</label>
+                    <table>
+                    [% FOREACH dwngr IN downgrades %]
+                        [% FOREACH subscr IN subscriptions_from_group %]
+                            [% IF subscr.id == dwngr.subscription_downgrade_id %]
+                                <label>
+                                    <input type="text" class="details_textbox" value="[% subscr.name %]" readonly/>
+                                </label>
+                            [% END %]
+                        [% END %]
+                    [% END %]
+                    </table>
+                </div>
+                <div id="discount_codes" class="tab-pane clearfix">
+                        [%# INCLUDE admin/subscriptions/tabs/discount_codes.tt %]
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-inverse" onclick="goBack();"><i class="icon-white icon-arrow-left"></i> Back</button>
+</div>
+
+
+<script>
+
+$(document).ready( function () {
+    // set styling for current tab
+    $('#myTab a').on('click', function (e) {
+        e.preventDefault();
+        $('#myTab a').each(function() {
+            $(this).css('background-color', 'white');
+        });
+        $(this).tab('show');
+        $(this).css('background-color', '#EEEEEE');
+    });
+
+    // activate "Features" tab on page load
+    $('#myTab a:first').trigger('click');
+
+    $('#discount_codes').load("/admin/subscriptions/tabs/discount_codes/" + ([% subscription.id %] || '0/'));
+});
+
+</script>
+
+[% END %]

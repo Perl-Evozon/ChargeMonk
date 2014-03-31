@@ -1,0 +1,31 @@
+<div id="add_subscr_downgrade">
+    <label class="chargemonk_info_label">List of subscriptions that current subscription can downgrade to.</label>
+    <div class="features_div">
+        <select multiple name="selected_downgrades" id="selected_downgrades">
+                [% FOREACH subscription IN subscriptions.sort('name') %]
+                    <option value="[% subscription.id %]"
+                        [% IF subscription_downgrade_to_ids.grep("^$subscription.id\$").size %]selected[% END %]>
+                        [% subscription.name %]
+                    </option>
+                [% END %]
+        </select>
+        <span id="plus_downgrade" class="display_sign"> + </span>
+    </div>  
+</div>
+
+<script>
+
+$('#selected_downgrades').on('change', relocate_plus_downgrade);
+
+function relocate_plus_downgrade() {
+    var position = $('#selected_downgrades').parent().find('li[class=select2-search-field]').position();
+    var top_coord = position.top + 15;
+
+    $('#plus_downgrade').css('top', top_coord + 'px');
+}
+
+$('#plus_downgrade').on('click', function(){
+    $('#selected_downgrades').parent().find('li[class=select2-search-field]').find('input').trigger('focus');
+});
+
+</script>

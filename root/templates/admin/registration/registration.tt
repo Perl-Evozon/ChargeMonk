@@ -1,0 +1,89 @@
+[% WRAPPER layouts/admin.tt %]
+
+<div id="content-header">
+	<h1>Registration</h1>
+</div>
+
+<hr>
+
+<h3 class="center">
+    Select the data that is required for registration. You may select the type
+    of info (contact / company) that is required for each subscription.
+</h3>
+
+<form method="post" action="#" name="update_registration_form" id="update_registration_form" enctype="multipart/form-data">
+    <input type="hidden" name="update" value="1" />
+    <div class="contact">
+        <h4>CONTACT INFORMATION</h4>
+
+        <div>
+            <div class="form-row">
+            </div>
+            <div class="form-row">
+                <input type="checkbox" name="sex"[% IF registration.sex %] checked[% END %] />Sex
+            </div>
+            <div class="form-row">
+                <input type="checkbox" name="first_name"[% IF registration.first_name %] checked[% END %] />First name
+            </div>
+            <div class="form-row">
+                <input type="checkbox" name="last_name"[% IF registration.last_name %] checked[% END %] />Last name
+            </div>
+            <div class="form-row">
+                <input type="checkbox" name="date_of_birth"[% IF registration.date_of_birth %] checked[% END %] />Date of birth
+            </div>
+            <div class="form-row">
+                <input type="checkbox" name="address"[% IF registration.address %] checked[% END %] />Address
+            </div>
+            <div class="form-row">
+                <input type="checkbox" name="address_2"[% IF registration.address_2 %] checked[% END %] />Address 2
+            </div>
+            <div class="form-row">
+                <input type="checkbox" name="country"[% IF registration.country %] checked[% END %] />Country
+            </div>
+            <div class="form-row">
+                <input type="checkbox" name="state"[% IF registration.state %] checked[% END %] />State
+            </div>
+            <div class="form-row">
+                <input type="checkbox" name="zip_code"[% IF registration.zip_code %] checked[% END %] />Zip code
+            </div>
+            <div class="form-row">
+                <input type="checkbox" name="phone_number"[% IF registration.phone_number %] checked[% END %] />Phone #
+            </div>
+        </div>
+
+    </div>
+
+    <div class="contact">
+        <h4>COMPANY INFORMATION</h4>
+        <div>
+            <div class="form-row">
+                <input type="checkbox" name="company_name"[% IF registration.company_name %] checked[% END %]/>Company name
+            </div>
+            <div class="form-row">
+                <input type="checkbox" name="company_address"[% IF registration.company_address %] checked[% END %] />Address
+            </div>
+            <div class="form-row">
+                <input type="checkbox" name="company_country"[% IF registration.company_country %] checked[% END %] />Country
+            </div>
+            <div class="form-row">
+                <input type="checkbox" name="company_state"[% IF registration.company_state %] checked[% END %] />State
+            </div>
+            <div class="form-row">
+                <input type="checkbox" name="company_zip_code"[% IF registration.company_zip_code %] checked[% END %] />Zip code
+            </div>
+            <div class="form-row">
+                <input type="checkbox" name="company_phone_number"[% IF registration.company_phone_number %] checked[% END %] />Phone #
+            </div>
+        </div>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="center">
+        <button class="btn" type="submit" id="submit_add_theme_form"><i class="icon icon-ok"></i>Update</button>
+        &nbsp;or&nbsp;
+        <a href="#" onclick="goBack();">Cancel</a>
+    </div>
+</form>
+
+[% END %]

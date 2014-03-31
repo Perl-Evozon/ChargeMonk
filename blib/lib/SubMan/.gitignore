@@ -1,0 +1,9 @@
+META.yml
+MYMETA.json
+MYMETA.yml
+Makefile
+blib/
+inc/
+root/static/themes/*
+tags
+/vagrant/

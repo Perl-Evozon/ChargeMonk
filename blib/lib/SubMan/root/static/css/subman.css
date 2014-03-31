@@ -1,0 +1,510 @@
+.cf:before, .cf:after { content:""; display:table; }
+.cf:after { clear:both; }
+/* For IE 6/7 (trigger hasLayout) */
+.cf { zoom:1; }
+body {
+    color: #000000;
+}
+
+.center {
+    text-align: center;
+}
+
+.spacer {
+    clear: both;
+}
+
+#filter_table {
+    margin-left: 10%;
+    width: 80%;
+}
+#filter_table td {
+    width: 20%;
+}
+#filter_table tbody em {
+  font-style: normal;
+}
+#filter_table tbody em:hover {
+	color: #a2a4a6;
+}
+#search_users_set_filters button {
+    margin-right: 2%;
+}
+.filter_criteria_btn {
+    margin-top: 1%;
+    width: 16%;
+}
+
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th {
+  background-color: #efefef;
+}
+
+hr {
+    margin-left: 1%;
+    margin-right: 1%;
+}
+
+#user_details_table {
+    width: 80%;
+}
+#upgrade_table {
+    width: 70%;
+}
+#user_details_table td {
+    width: 50%;
+}
+
+.user_info {
+    overflow: hidden;
+    white-space: nowrap;
+}
+.user_info :first-child {
+    float: left;
+}
+.user_info img {
+    max-width: 200px;
+    max-height: 150px;
+    padding:1px;
+    border:1px solid #a2a4a6;
+}
+.user_info :last-child {
+    float: right;
+    margin-right: 10%;
+}
+.user_statistics {
+    float: right;
+    margin-right: 10%;
+}
+.user_statistics button {
+    font-size: small;
+}
+
+#countries_div {
+    position: relative;
+    width:  400%;
+    z-index: 2;
+}
+#countries_div ul {
+    display:none;
+    width: 80%;
+    z-index: 2;
+    border: 1px solid #354657;
+    padding: 10px;
+    list-style: none;
+    background-color: #444444;
+    color: white;
+}
+
+#countries_div ul li {
+    display:inline-block;
+    width:20%;
+}
+
+#signup_dates_div {
+    position: relative;
+    width:  200%;
+    z-index: 2;
+}
+#signup_dates_div ul {
+    display:none;
+    width: 80%;
+    z-index: 2;
+    border: 1px solid #354657;
+    padding: 10px;
+    list-style: none;
+    background-color: #444444;
+    color: white;
+}
+
+#signup_dates_div ul li {
+    display:inline-block;
+    width:30%;
+}
+    #signup_dates_div ul span {
+        color: #444444;
+    }
+
+.input-append .add-on {
+    background-color: white;
+}
+.input-append .add-on:hover {
+    background-color: #efefef;
+}
+
+#subscriptions_table_length, #billing_history_table_length {
+	/*display: none;*/
+}
+
+#billing_history_widget_box {
+	width:76%;
+}
+
+#subscription_groups {
+	display: none;
+	z-index: 500;
+	position: absolute;
+	width:70%;
+	left: 16%;
+}
+#subscription_groups .content{
+    background:#fff;
+    padding: 20px;
+}
+#subscription_groups .popup{
+    border-radius: 7px;
+    background:#6b6a63;
+    margin:10px auto 0;
+    padding:6px;
+    position:absolute;
+    width: 100%;
+}
+#subscription_groups em{
+	font-style: normal;
+}
+
+#subscription_groups_table_length {
+	display:  none;
+}
+
+#overlay {
+   position:fixed;
+   top:0;
+   left:0;
+   height:100%;
+   width:100%;
+   z-index:100;
+   background-color:#444444;
+   opacity:0.5;
+   filter:alpha(opacity=50);
+   display: none;
+}
+
+#add_group_div {
+	display: none;
+}
+
+#edit_group_div {
+	display: none;
+	position: absolute;
+	z-index: 600;
+	background-color: #222222;
+	border-radius: 10px;
+	padding: 5px;
+}
+
+#edit_group_div a {
+	color: white;
+}
+
+#edit_group_div a:hover {
+	color: #a2a4a6;
+}
+
+.icon-grey {
+ opacity: 0.5;
+}
+
+.textarea-non-resizable {
+    resize: none;
+}
+
+#add_subscr_data_tabs {
+
+	margin-top: 20px;
+	min-height: 250px;
+	border-radius: 3px;
+	width: 50%;
+	min-width: 650px;
+    margin-bottom: 100px;
+	overflow-style: marquee-block;
+}
+    #add_subscr_data_tabs .tab-content {
+        margin: 0;
+        padding: 10px;
+        border: 1px solid #999;
+        border-top: none;
+        background-color: #fff;
+    }
+
+#add_subscr_data_tabs a {
+	color: #222222;
+    background-color: #d8d8d8 !important;
+}
+
+#add_subscr_data_tabs li {
+	background-color: white;
+	border: none;
+	width: 20%;
+	text-align: center;
+}
+
+#add_subscr_data_tabs a:hover {
+	color: #a2a4a6;
+}
+
+#add_subscr_data_tabs li[class=active] a:hover {
+	color: #222222;
+}
+
+#add_subscr_data_tabs .select2-container-multi {
+	margin-top: 2%;
+	/*margin-left: 4%;*/
+	width: 50%;
+}
+
+
+#add_subscr_data_tabs .select2-search-choice {
+	margin-left: 2%;
+	width: 88%;
+	color: #333333;
+}
+
+.tab-content {
+	margin: 2% 2% 2% 2%;
+	overflow: visible;
+}
+
+.display_sign {
+	font-size:  xx-large;
+	color: #444444;
+	margin-left: 3%;
+	opacity:  0.5;
+}
+
+.subman_info_label {
+	opacity:  0.5;
+	/*text-align: center;*/
+	margin-top: 2%;
+	margin-bottom: 2%;
+}
+
+.features_div {
+	/*margin-left: 7%;
+	margin-top: 2%;*/
+}
+
+#plus_feature, #plus_upgrade, #plus_downgrade {
+	position:relative;
+	top: 15px;
+	left: -5px;
+}
+
+.inline-control {
+	display: inline-block;
+	width: 23%;
+}
+
+.inline-label {
+	display: inline-block;
+}
+
+.inline-control input {
+	width: 90%;
+}
+
+#subscription_details_table td label {
+	font-size: larger;
+	margin-bottom: 4%;
+}
+
+#subscription_details_table td h5 {
+	margin-top: 10%;
+	margin-bottom: 5%;
+}
+
+#subscription_details_table td {
+	width: 40%;
+}
+
+#subscription_details_table tr td {
+	color: #888888;
+}
+
+input[class=details_textbox] {
+	margin-top: 5px;
+	color: rgba(82, 168, 236, 0.8);
+	text-align: center;
+	width: 330px;
+}
+
+#manage_users_add_user {
+    display: none;
+    z-index: 500;
+    position: absolute;
+    width:70%;
+    left: 16%;
+}
+#manage_users_add_user .content{
+    background:#fff;
+    padding: 20px;
+}
+#manage_users_add_user .popup{
+    border-radius: 7px;
+    background:#6b6a63;
+    margin:10px auto 0;
+    padding:6px;
+    position:absolute;
+    width: 100%;
+}
+#manage_users_add_user em{
+    font-style: normal;
+}
+
+#manage_users_edit_user {
+    display: none;
+    z-index: 500;
+    position: absolute;
+    width:70%;
+    left: 16%;
+}
+#manage_users_edit_user .content{
+    background:#fff;
+    padding: 20px;
+}
+#manage_users_edit_user .popup{
+    border-radius: 7px;
+    background:#6b6a63;
+    margin:10px auto 0;
+    padding:6px;
+    position:absolute;
+    width: 100%;
+}
+#manage_users_edit_user em{
+    font-style: normal;
+}
+
+#manage_ips_add_ip_range {
+    display: none;
+    z-index: 500;
+    position: absolute;
+    width:70%;
+    left: 16%;
+}
+#manage_ips_add_ip_range .content{
+    background:#fff;
+    padding: 20px;
+}
+#manage_ips_add_ip_range .popup{
+    border-radius: 7px;
+    background:#6b6a63;
+    margin:10px auto 0;
+    padding:6px;
+    position:absolute;
+    width: 100%;
+}
+#manage_ips_add_ip_range em{
+    font-style: normal;
+}
+
+#manage_ips_edit_ip_range {
+    display: none;
+    z-index: 500;
+    position: absolute;
+    width:70%;
+    left: 16%;
+}
+#manage_ips_edit_ip_range .content{
+    background:#fff;
+    padding: 20px;
+}
+#manage_ips_edit_ip_range .popup{
+    border-radius: 7px;
+    background:#6b6a63;
+    margin:10px auto 0;
+    padding:6px;
+    position:absolute;
+    width: 100%;
+}
+#manage_ips_edit_ip_range em{
+    font-style: normal;
+}
+
+.theme {
+    margin: 0 40px 40px 0;
+    padding: 20px;
+    padding-bottom: 0;
+    float: left;
+    width: 200px;
+    height: 220px;
+    border: 1px solid #cccccc;
+    position: relative;
+}
+    .theme img {
+        width: 100%;
+    }
+
+.theme span {
+    font-size: 14px;
+    text-align: left;
+    margin-left: 5px;
+}
+
+.theme a {
+    position: absolute;
+    left: 20px;
+    bottom: 5px;
+}
+
+.theme button.delete {
+    position: absolute;
+    top: 120px;
+    left: 80px;
+    font-size: 12px;
+    height: 22px;
+    padding-top: 1px;
+    display: none;
+}
+
+.dataTables_filter {
+    position: relative;
+    display: inline-block;
+}
+
+#campaigns_table_filter input {
+    width: auto;
+}
+
+.dataTables_paginate {
+    display: inline;
+    float: right;
+}
+
+.contact {
+    width: 35%;
+    float: left;
+    padding: 20px 60px;
+}
+
+.contact h1 {
+    font-size: 16px;
+}
+
+.contact .form-row {
+    margin: 15px;
+}
+
+.contact input[type="checkbox"] {
+    margin-top: -3px;
+    margin-right: 10px;
+}
+.payment-title {
+	float: left;
+	padding-left: 20px;
+}
+.payment-edit  a{
+	line-height: 60px;
+	margin-right: 30px;
+	display: block;
+}
+.DataTables_sort_wrapper .ui-icon {
+	float: right;
+}
+
+#add_subscr_campaigns label {
+    padding-top: 5px;
+}
+
+.move-right {
+    padding-left: 50px;
+}

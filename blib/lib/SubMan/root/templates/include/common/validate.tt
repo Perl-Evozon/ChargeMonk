@@ -1,0 +1,22 @@
+<script type="text/javascript">
+$(function(){
+    [% FOREACH input_field IN form_data.keys %]
+        $("#[% input_field %]").val("[% form_data.$input_field %]");
+    [% END %]
+    
+    [% IF errors %]
+        [%focus = 1%]
+        [% FOREACH error IN errors.keys %]
+            [%IF focus == 1%]
+                $("#[%error%] input").length ? $("#[%error%] input").focus() : $("#[%error%]").focus();
+                [%focus=0%]
+            [%END%]
+            [% FOREACH error_message IN errors.$error %]
+                var position = $("#[%error%] input").length ? $("#[%error%]") : $("#[%error%]").closest(".controls");
+                var indent = $("#[%error%] input").length ? "120px" : "200px";
+                $("<div style='color:#b94a48;padding-left:"+ indent +"'><strong>[%error_message%].</strong></div>").insertAfter(position);
+            [% END %]
+        [% END %]
+    [% END %]
+})
+</script>

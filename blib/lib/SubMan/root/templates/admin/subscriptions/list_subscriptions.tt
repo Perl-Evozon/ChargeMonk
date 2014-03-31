@@ -1,0 +1,76 @@
+[% WRAPPER layouts/admin.tt %]
+
+<script src="/static/js/jquery.dataTables.min.js"></script>
+
+<div id="content-header">
+    <h1>
+        Subscriptions
+    </h1>
+    <div>
+		<a href="#"><button class="btn btn-info" type="button" id="groups_btn"><i class="icon icon-th-large"></i> Groups </button></a>
+		<button class="btn btn-info" type="button" onclick="location.href='subscriptions/add_subscription';"><i class="icon icon-plus-sign"></i> Add subscription </button>
+    </div>
+</div>
+
+<hr>
+
+[% IF NOT simulate_modal %]
+    [% INCLUDE include/common/alerts.tt %]
+[% END %]
+
+[% INCLUDE admin/subscriptions/manage_subscription_groups.tt %]
+
+<div class="container-fluid">
+    <div class="widget-box">
+        <div class="widget-content nopadding">
+            <table id="subscriptions_table" class="table table-hover table-striped table-bordered data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Access</th>
+                        <th>Type</th>
+                        <th>Group</th>
+                        <th>Visibility</th>
+                        <th>Company data?</th>
+                        <th>Live?</th>
+                        <th>Auto-renew?</th>
+                        <th>Position in group</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    [% FOREACH subscription IN subscriptions %]
+                        <tr>
+                            <td><a href="subscriptions/subscription_details/[% subscription.id %]">[% subscription.name %]</a></td>
+                            <td>[% subscription.access_type FILTER ucfirst | replace('_', ' ') %]</td>
+                            <td>[% subscription.type FILTER ucfirst %]</td>
+                            [% FOREACH grp IN groups %]
+                                [% IF grp.id == subscription.subscription_group_id %]
+                                    [% grp_name = grp.name %]
+                                [%END%]
+                            [% END %]
+                            <td>[% grp_name || '' %]</td>
+                            <td>[% subscription.is_visible ? 'YES' : 'NO' %]</td>
+                            <td>[% subscription.require_company_data ? 'YES' : 'NO' %]</td>
+                            <td>[% subscription.is_live ? 'YES' : 'NO' %]</td>
+                            <td>[% subscription.has_auto_renew ? 'YES' : 'NO' %]</td>
+                            <td>[% subscription.position_in_group %]</td>
+                        </tr>
+                    [% END %]
+                </tbody>
+            </table>
+        </div>
+    </div
+</div>
+
+<script>
+
+$(document).ready( function () {
+    $('#subscriptions_table').dataTable();
+    if ( [% simulate_modal || 0 %] == 1 ) {
+        $('#groups_btn').trigger('click');
+    }
+});
+
+</script>
+
+[% END %]

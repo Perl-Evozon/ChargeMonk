@@ -1,0 +1,29 @@
+  a {
+    text-decoration:none;
+  }
+  a:hover{
+    text-decoration:none;
+  }
+  .description {
+    color : white;
+  }
+  .description:hover {
+    color : white;
+  }
+  .minus {
+   color : black;
+  }
+    .details {
+  overflow-y: scroll;
+  }
+  #detail div div label{
+    text-align:left;
+  }
+  #detail .control-group{
+    margin-bottom:0px;
+  
+  }
+  #detail > div > label {
+    text-align : left;
+  }
+  

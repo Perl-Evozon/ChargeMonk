@@ -1,0 +1,51 @@
+    [% USE IO.All; USE JSON %]
+    [% layoutconfig = JSON.json_decode( IO.All.new( "${c.path_to}/root/templates/text/en/layouts/default.json" ).all ) %]
+    <div id="header">
+      <div class="navbar-fixed-top container">
+        <div class="header-inner">
+          <div class="logo"><a href="/"><img src="[% layoutconfig.logo %]"/></a></div>
+          <div class="top-nav">
+            <ul>
+              <li><a href="/why-us">[% layoutconfig.navbar.why_us %]</a></li>
+              <li><a href="/how-it-works">[% layoutconfig.navbar.how_it_works %]</a></li>
+              <li><a href="/faq">[% layoutconfig.navbar.faq %]</a></li>
+              [% IF c.tx.req.env.item('psgix.session').user.defined %]
+              <li><a href="/logout">[% layoutconfig.navbar.logout %]</a></li>
+              <li><a href="/user" class="btn btn-info btn-large header-login">[% layoutconfig.navbar.myAccount %]</a></li>
+              [% ELSE %]
+              <li><a href="/pricing">[% layoutconfig.navbar.pricing %]</a></li>
+              <li><a data-toggle="modal" href="#login-window" class="btn btn-info btn-large header-login">[% layoutconfig.navbar.login %]</a></li>
+              [% END %]
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id="subheader">
+        <div class="container">
+          [% IF c.req.path == "" %]
+          <div id="myCarousel" class="carousel">
+            <div class="carousel-inner">
+                [% FOREACH item IN  layoutconfig.carousel%]
+              <div class="item [% item.status %]">
+                <div class="carousel-content">
+                  <h3>[% item.title %]</h3>
+                  <h5>[% item.text  %]</h5>
+                  <a class="btn btn-success btn-large" href="/pricing">Start now!</a>
+                </div>
+                <img src="[% item.image %]" style="margin:0 auto;"/>
+              </div>
+                [% END %]             
+            </div>
+          <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+          <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+          </div>
+          [% ELSE %]
+           <div class="container">
+              <div class="span12">
+                <h2>[% subtitle %]</h2>
+              </div>
+            </div>
+          [% END %]
+        </div>
+      </div>
+    </div>

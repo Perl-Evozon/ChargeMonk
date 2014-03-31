@@ -1,0 +1,91 @@
+[% WRAPPER 'layouts/default.tt' %]
+
+<form class="registration" method="post" autocomplete="off"
+    action="/register/corporate/step-2-confirmation/[% c.request.arguments.0  %]/[% c.request.arguments.1  %]">
+    <input type="hidden" name="active_from_date" value="[% c.request.param('active_from_date') %]" />
+    <input type="hidden" name="active_to_date" value="[% c.request.param('active_to_date') %]" />
+    <input type="hidden" name="nr_of_period_users" value="[% c.request.param('nr_of_period_users') %]" />
+    <input type="hidden" name="email" value="[% c.request.param('email') %]" />
+    <input type="hidden" name="password" value="[% c.request.param('password') %]" />
+    <input type="hidden" name="first_name" value="[% c.request.param('first_name') %]" />
+    <input type="hidden" name="last_name" value="[% c.request.param('last_name') %]" />
+    <input type="hidden" name="gender" value="[% c.request.param('gender') %]" />
+    <input type="hidden" name="date_of_birth" value="[% c.request.param('date_of_birth') %]" />
+    <input type="hidden" name="address" value="[% c.request.param('address') %]" />
+    <input type="hidden" name="address_2" value="[% c.request.param('address_2') %]" />
+    <input type="hidden" name="country" value="[% c.request.param('country') %]" />
+    <input type="hidden" name="state" value="[% c.request.param('state') %]" />
+    <input type="hidden" name="zip_code" value="[% c.request.param('zip_code') %]" />
+    <input type="hidden" name="phone_number" value="[% c.request.param('phone_number') %]" />
+    <div class="row cf">
+        <div class="register-steps cf">
+            <div class="step">
+                <i>1</i>
+                <span>Personal Info</span>
+            </div>
+            <div class="step active">
+                <i>2</i>
+                <span>Company Info</span>
+            </div>
+            <div class="step">
+                <i>3</i>
+                <span>Credit Card Info</span>
+            </div>
+            <div class="step">
+                <i>4</i>
+                <span>Confirmation</span>
+            </div>
+        </div>
+    </div>
+    <div class="form-data">
+        [% IF required_data.company_name %]
+        <div class="form-row">
+            <label for="company_name">Company Name:</label>
+            <input type="text" id="company_name" name="company_name" />
+        </div>
+        [% END %]
+        [% IF required_data.company_address %]
+        <div class="form-row">
+            <label for="company_address">Address:</label>
+            <input type="text" id="company_address" name="company_address" />
+        </div>
+        [% END %]
+        [% IF required_data.company_country %]
+        <div class="form-row">
+            <label for="company_country">Country:</label>
+            <input type="text" id="company_country" name="company_country" />
+        </div>
+        [% END %]
+        [% IF required_data.company_zip_code %]
+        <div class="form-row">
+            <label for="company_zip_code">Zip Code:</label>
+            <input type="text" id="company_zip_code" name="company_zip_code" />
+        </div>
+        [% END %]
+        [% IF required_data.company_phone %]
+        <div class="form-row">
+            <label for="company_phone">Phone:</label>
+            <input type="text" id="company_phone" name="company_phone" />
+        </div>
+        [% END %]
+        <div class="form-row right">
+            <input type="submit" value="Continue" class="btn btn-primary" />
+        </div>
+    </div>
+    <div class="description">
+        <h1>How company info brings more benefits</h1>
+        <p>
+             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+             vel fringilla elit. Praesent congue elit et lectus porttitor
+             vitae semper dui aliquam. Duis porta convallis sem at aliquam.
+        </p>
+        <p>
+             In nisl metus, interdum ac fermentum ac, dignissim quis nibh.
+             Vivamus pulvinar, arcu sit amet aliquet ultricies, nisl erat
+             rutrum arcu, ac blandit justo lorem quis quam.
+        </p>
+    </div>
+    <div class="spacer"></div>
+</form>
+
+[% END %]

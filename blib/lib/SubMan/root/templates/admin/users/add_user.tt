@@ -1,0 +1,314 @@
+[% WRAPPER layouts/admin.tt %]
+
+<link href="/static/css/bootstrap-fileupload.css" rel="stylesheet">
+<script src = "/static/js/countries2.js"></script>
+<script src = "/static/js/bootstrap-fileupload.js"></script>
+<script src = "/static/js/bootstrap-datepicker.js"></script>
+<script src = "/static/js/resample.js"></script>
+
+<div id="content-header">
+    <h1>
+        Add user
+    </h1>
+</div>
+
+[% INCLUDE include/common/alerts.tt %]
+
+<div class="container-fluid">
+    <form method="post" action="create_user" name="add_user_form" id="add_user_form" enctype="multipart/form-data">
+        <div class="control-group">
+            <table>
+                <tr>
+                    <td>
+                        <label class="control-label" id="sex">Gender:</label>
+                        <div class="form-group">
+                            <label><input type="radio" checked="" value="M" name="gender"/> M</label>
+                            <label><input type="radio" value="F" name="gender"/> F</label>
+                        </div>
+                    </td>
+                    <td>
+                        <label class="checkbox inline" style="width: 50%"><input type="checkbox" name="admin_user" />Admin user</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-right: 20px">
+                        <label class="control-label">First name: </label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="firstname" name="firstname" maxlength="100" required/>
+                        </div>
+                        <label class="control-label">Last name: </label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="lastname" name="lastname" maxlength="100" required/>
+                        </div>
+                        <label class="control-label">E-mail: </label>
+                        <div class="form-group">
+                            <input type="email" class="form-control" id="email" name="email" maxlength="50" required/>
+                        </div>
+                        <label class="control-label">Date of birth: </label>
+                        <div class="form-group">
+                            <div class="input-append input-group">
+                                <input class="form-control" id="birthday_datepicker" name="birthday" type="text" />
+                                <span class="input-group-addon" onclick="$('#birthday_datepicker').val('')"><i class="icon icon-remove-circle"></i></span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="fileupload fileupload-new" data-provides="fileupload" style="text-align:right; margin-right: 10%;">
+                            <div class="fileupload-new thumbnail" style="width: 48%; height: 36%;">
+                                <img src="/static/img/default-user.png" name="uploaded_photo" id="uploaded_photo">
+                                <input type="hidden" value="" id="photo_input" name="photo_input"/>
+                            </div>
+                            <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 300px; max-height: 200px;" id="img" name="photo_preview">
+                            </div>
+                            <div>
+                                <span class="btn btn-file">
+                                    <span class="fileupload-new">Select image</span>
+                                    <span class="fileupload-exists">Change</span>
+                                    <input type="file" accept="image/*" id="file"/>
+                                </span>
+                                <a class="btn fileupload-exists" data-dismiss="fileupload" href="#">Remove</a>
+                            </div>
+                        </div>
+                        <div style="display: none">
+                        	<input id="width" type="text" value="280" />
+							<input id="height" type="text" />
+
+							<br /><span id="message"></span><br />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h5>CONTACT INFORMATION</h5>
+                    </td>
+                    <td>
+                        <h5>COMPANY INFORMATION</h5>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-right: 20px">
+                        <label class="control-label">Address: </label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="address" maxlength="200"/>
+                        </div>
+                        <label class="control-label">Address 2: </label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="address2" maxlength="200"/>
+                        </div>
+                        <label class="control-label">Country: </label>
+                        <div class="form-group">
+                            <select id='country' class="form-control" name='country' onchange='populateState("country","state")'></select>
+                        </div>
+                        <label class="control-label">State: </label>
+                        <div class="form-group">
+                            <select id='state' class="form-control" name='state'></select>
+                        </div>
+                        <script type="text/javascript">initCountry('', 'country', 'state'); </script>
+                        <label class="control-label">Zip Code: </label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="zip_code" maxlength="10"/>
+                        </div>
+                        <label class="control-label">Phone#: </label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" pattern="[\d\.\+\-\s\#]*" id="phone" name="phone" maxlength="15"/>
+                            <p class="help-block">Accepted characters: 0-9 + - . #</p>
+                        </div>
+                    </td>
+                    <td>
+                        <label class="control-label">Company name: </label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="company_name" maxlength="200"/>
+                        </div>
+                        <label class="control-label">Address: </label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="company_address" maxlength="200"/>
+                        </div>
+                        <label class="control-label">Country: </label>
+                        <div class="form-group">
+                            <select id='company_country' class="form-control" name='company_country' onchange='populateState("company_country","company_state")'></select>
+                        </div>
+                        <label class="control-label">State: </label>
+                        <div class="form-group">
+                            <select id='company_state' class="form-control" name='company_state'></select>
+                        </div>
+                        <script type="text/javascript">initCountry('', 'company_country', 'company_state'); </script>
+                        <label class="control-label">Zip Code: </label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="company_zip_code" maxlength="10"/>
+                        </div>
+                        <label class="control-label">Phone#: </label>
+                        <div class="form-group">
+                            <input type="text" class="form-control" pattern="[\d\.\+\-\s\#]*" id="company_phone" name="company_phone" maxlength="15"/>
+                            <p class="help-block">Accepted characters: 0-9 + - . #</p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div class="center">
+                <button class="btn" type="submit" id="submit_add_user_form"><i class="icon icon-ok"></i> Save</button>
+                &nbsp;or&nbsp;
+                <a onclick="goBack();">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+$(document).ready(function(){
+    var d = new Date();
+    var today = d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
+
+    $('#birthday_datepicker').datepicker({
+        format: 'MM dd, yyyy',
+        endDate: "today",
+        startView: 'decade',
+        autoclose: true
+    });
+
+    $("#add_user_form").on('submit',function(){
+        $("#photo_input").val($('#img img').attr('src'));
+    });
+});
+
+$('#birthday_datepicker').on('keydown', function(event) {
+    if ( event.which == 8 ) {
+        //only backspace chr allowed
+        $(this).val('');
+        $(this).trigger('change');
+        $(this).datepicker('hide'); //hide the calendar
+        $(this).blur(); // element not focused any more
+    }
+    return false;
+});
+</script>
+
+<script>
+	(function (global, $width, $height, $file, $message, $img) {
+
+		// (C) WebReflection Mit Style License
+
+		// simple FileReader detection
+		if (!global.FileReader)
+			// no way to do what we are trying to do ...
+			return $message.innerHTML = "FileReader API not supported"
+		;
+
+		// async callback, received the
+		// base 64 encoded resampled image
+		function resampled(data) {
+			$message.innerHTML = "done";
+			($img.lastChild || $img.appendChild(new Image)
+			).src = data;
+		}
+
+		// async callback, fired when the image
+		// file has been loaded
+		function load(e) {
+			$message.innerHTML = "resampling ...";
+			// see resample.js
+			Resample(
+					this.result,
+					this._width || null,
+					this._height || null,
+					resampled
+			);
+
+		}
+
+		// async callback, fired if the operation
+		// is aborted ( for whatever reason )
+		function abort(e) {
+			$message.innerHTML = "operation aborted";
+		}
+
+		// async callback, fired
+		// if an error occur (i.e. security)
+		function error(e) {
+			$message.innerHTML = "Error: " + (this.result || e);
+		}
+
+		// listener for the input@file onchange
+		$file.addEventListener("change", function change() {
+			var
+				// retrieve the width in pixel
+				width = parseInt($width.value, 10),
+				// retrieve the height in pixels
+				height = parseInt($height.value, 10),
+				// temporary variable, different purposes
+				file
+			;
+			// no width and height specified
+			// or both are NaN
+			if (!width && !height) {
+				// reset the input simply swapping it
+				$file.parentNode.replaceChild(
+					file = $file.cloneNode(false),
+					$file
+				);
+				// remove the listener to avoid leaks, if any
+				$file.removeEventListener("change", change, false);
+				// reassign the $file DOM pointer
+				// with the new input text and
+				// add the change listener
+				($file = file).addEventListener("change", change, false);
+				// notify user there was something wrong
+				$message.innerHTML = "please specify width or height";
+			} else if(
+				// there is a files property
+				// and this has a length greater than 0
+				($file.files || []).length &&
+				// the first file in this list
+				// has an image type, hopefully
+				// compatible with canvas and drawImage
+				// not strictly filtered in this example
+				/^image\//.test((file = $file.files[0]).type)
+			) {
+				// reading action notification
+				$message.innerHTML = "reading ...";
+				// create a new object
+				file = new FileReader;
+				// assign directly events
+				// as example, Chrome does not
+				// inherit EventTarget yet
+				// so addEventListener won't
+				// work as expected
+				file.onload = load;
+				file.onabort = abort;
+				file.onerror = error;
+				// cheap and easy place to store
+				// desired width and/or height
+				file._width = width;
+				file._height = height;
+				// time to read as base 64 encoded
+				// data te selected image
+				file.readAsDataURL($file.files[0]);
+				// it will notify onload when finished
+				// An onprogress listener could be added
+				// as well, not in this demo tho (I am lazy)
+			} else if (file) {
+				// if file variable has been created
+				// during precedent checks, there is a file
+				// but the type is not the expected one
+				// wrong file type notification
+				$message.innerHTML = "please chose an image";
+			} else {
+				// no file selected ... or no files at all
+				// there is really nothing to do here ...
+				$message.innerHTML = "nothing to do";
+			}
+		}, false);
+	}(
+		// the global object
+		this,
+		// all required fields ...
+		document.getElementById("width"),
+		document.getElementById("height"),
+		document.getElementById("file"),
+		document.getElementById("message"),
+		document.getElementById("img")
+	));
+	</script>
+
+[% INCLUDE include/common/validate.tt %]
+
+[% END %]

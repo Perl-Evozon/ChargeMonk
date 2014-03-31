@@ -1,0 +1,33 @@
+<div id="add_subscr_upgrade">
+    <label class="subman_info_label">List of subscriptions that current subscription can upgrade to.</label>
+    <div class="features_div">
+        <select multiple name="selected_upgrades" id="selected_upgrades">
+                [% FOREACH subscription IN subscriptions.sort('name') %]
+                    [% IF current_subscription.id != subscription.id %]
+                        <option value="[% subscription.id %]"
+                        [% IF subscription_upgrade_to_ids.grep("$subscription.id").size %]selected[% END %]>
+                            [% subscription.name %]
+                        </option>
+                    [% END %]
+                [% END %]
+        </select>
+        <span id="plus_upgrade" class="display_sign"> + </span>
+    </div>
+</div>
+
+<script>
+
+$('#selected_upgrades').on('change', relocate_plus_upgrade);
+
+function relocate_plus_upgrade() {
+    var position = $('#selected_upgrades').parent().find('li[class=select2-search-field]').position();
+    var top_coord = position.top + 15;
+
+    $('#plus_upgrade').css('top', top_coord + 'px');
+}
+
+$('#plus_upgrade').on('click', function(){
+    $('#selected_upgrades').parent().find('li[class=select2-search-field]').find('input').trigger('focus');
+});
+
+</script>

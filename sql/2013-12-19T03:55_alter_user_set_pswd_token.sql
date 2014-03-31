@@ -1,0 +1,1 @@
+ALTER TABLE "public"."user_psw_set_token" DROP CONSTRAINT "user_psw_set_token_uid_fkey", ADD CONSTRAINT "user_psw_set_token_uid_fkey" FOREIGN KEY ("uid") REFERENCES "public"."user" ("id") ON DELETE CASCADE;

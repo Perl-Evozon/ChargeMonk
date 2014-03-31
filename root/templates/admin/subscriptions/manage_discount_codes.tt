@@ -1,0 +1,132 @@
+[% USE date(format = '%B %d, %Y') %]
+
+<div id="overlay">
+    <!-- this is used as an intermediate layer to display between page elements and the manage groups 'popup' -->
+</div>
+
+<div id="subscription_groups" class="subscription_groups">
+    <div id="popup" class="popup">
+        <div class="content icons-grey">
+            <i id='cancel_group_manager' class="icon icon-remove-circle icon-grey" style="float: right;margin-bottom: 15px;"></i>
+            [% IF simulate_modal %]
+                [% INCLUDE include/common/alerts.tt %]
+            [% END %]
+            <div class="container-fluid">
+                <div class="widget-box">
+                    <div class="widget-title">
+                            <h5>Groups</h5>
+                    </div>
+                    <div class="widget-content nopadding">
+                        <form id="delete_group_form" method="post" name="delete_group_form">
+                            <input type="hidden" id="delete_group_id" name="id" value=""/>
+                            <input type="hidden" value="" name="simulate_modal"/>
+                            <button class="btn" type="submit" name="delete_this_group" id="delete_this_group" style="display: none;"></button>
+                        </form>
+                        <form id="edit_group_form" method="post" name="edit_group_form" >
+                                <div class="controls" id="edit_group_div">
+                                    <input type="text" placeholder="New Group Name" name="name" maxlength="40" style="width:50%"/>
+                                    <button class="btn" type="submit" name="edit_this_group" id="edit_this_group"><i class="icon icon-ok"></i> Save</button>
+                                    <a onclick="$('#edit_group_div input[name=name]').val(''); $('#edit_group_div').fadeOut();">Cancel</a>
+                                </div>
+                            <input type="hidden" id="edit_group_id" name="id" value=""/>
+                            <input type="hidden" value="" name="simulate_modal"/>
+                        </form>
+                        <table id="subscription_groups_table" class="table table-hover table-bordered table-striped data-table">
+                            <thead>
+                                <tr>
+                                    <th>Group name</th>
+                                    <th>Creation date</th>
+                                    <th>Number of subscriptions</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                [% FOREACH group IN groups %]
+                                    <tr>
+                                        <td><em [% group.name != 'Default' ? 'ondblclick="var position=$(this).position(); set_edit_form(' _ group.id _ ', position );"' : '' %]>[% group.name %]</em></td>
+                                        [% dt = group.creation_date %]
+                                        [% dt = dt | replace('T', ' ') %]
+                                        <td>[% date.format(dt) %]</td>
+                                        <td style="text-align : center;">[% group.subscriptions_rs.count %]</td>
+                                        <td style="text-align : center;">
+                                            [% ( ! group.subscriptions_rs.count && group.name != 'Default' ) ? '<i onclick="$(\'#delete_group_id\').val(' _ group.id _ ');$(\'#delete_this_group\').trigger(\'click\');" class="icon icon-remove-sign"></i>' : '' %]
+                                        </td>
+                                    </tr>
+                                [% END %]
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <a id="add_group_link"> Add new </a>
+            <div id="add_group_div">
+                <form  method="post" id="add_group_form">
+                    <label class="control-label">Group Name:</label>
+                    <div class="controls">
+                        <input type="text" style="width:30%" name="name" maxlength="40"  required/>
+                        <button class="btn" type="submit" name="create_this_group"><i class="icon icon-ok"></i> Create</button>
+                    </div>
+                    <input type="hidden" value="" name="simulate_modal"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+$(document).mouseup(function (e){
+    // if edit_group_div is visible hide it on click outside
+    if ($('#edit_group_div').css('display') == 'block') {
+        if ( ! $("#edit_group_div").is(e.target) && $("#edit_group_div").has(e.target).length === 0 ) {
+            $('#edit_group_div input[name=name]').val('');
+            $('#edit_group_div').fadeOut();
+        }
+    }
+});
+
+$('#groups_btn').on('click', function( e ) {
+    $('#overlay').fadeIn();
+    $('#subscription_groups').fadeIn();
+    $('input[name=simulate_modal]').each(function() {
+        $(this).val(1);
+    });
+
+    // if real human click
+    if ( e.hasOwnProperty('originalEvent') ) {
+        // remove previous alerts
+        $('.span12 .alert').each(function() {
+            $(this).remove();
+        });
+
+        // remove add_group_div
+        $('#add_group_div').css('display', 'none');
+    }
+});
+
+$('#cancel_group_manager').on('click', function() {
+    $('#subscription_groups').fadeOut();
+    $('#overlay').fadeOut();
+    $('input[name=simulate_modal]').each(function() {
+        $(this).val(0);
+    });
+});
+
+$('#add_group_link').on('click', function(){
+    $('#add_group_div').slideDown();
+});
+
+$('#add_group_form').on('submit', function(){
+    $('#add_group_div').slideUp();
+});
+
+function set_edit_form( gr_id, pos ) {
+    $('#edit_group_id').val(gr_id);
+    var x_coord =pos.left - 215;
+    var y_coord = pos.top - 12;
+    $('#edit_group_div').css('left', x_coord);
+    $('#edit_group_div').css('top', y_coord);
+    $('#edit_group_div').fadeIn();
+};
+
+</script>

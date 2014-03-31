@@ -1,0 +1,101 @@
+<link href="/static/css/uniform.css" rel="stylesheet">
+
+<div id="overlay">
+    <!-- this is used as an intermediate layer to display between page elements and the manage groups 'popup' -->
+</div>
+
+<div id="manage_ips_edit_ip_range" class="manage_ips_edit_ip_range">
+    <div id="popup" class="popup">
+        <div class="content icons-grey">
+            <i id='cancel_manage_ips_edit_ip_range' class="icon icon-remove-circle icon-grey" style="float: right;margin-bottom: 15px;"></i>
+            [% IF simulate_modal %]
+                [% INCLUDE include/common/alerts.tt %]
+            [% END %]
+            <div class="container-fluid">
+                <div class="widget-box">
+                    <div class="widget-title">
+                            <h5>Edit IP Range</h5>
+                    </div>
+                </div>
+
+                <div class="widget-content nopadding">
+                    <form method="post" id="manage_ips_add_ip_range_form">
+                        <div class="control-group">
+                            <label class="control-label">From IP:</label>
+                            <div class="controls">
+                                <input type="text" style="width:15%" id="from_ip_edit" name="from_ip" maxlength="15" value="[% ip_range.from_ip %]"  required/>
+                            </div>
+
+                            <label class="control-label">To IP:</label>
+                            <div class="controls">
+                                <input type="text" style="width:9%" id="to_ip_class_edit" name="to_ip_class" maxlength="12"  required readonly/> .
+                                <input type="text" style="width:3%" id="to_ip_last_byte_edit" name="to_ip_last_byte" maxlength="3"  required/>
+                            </div>
+
+                            <div class="controls">
+                                <label><input type="radio" value="1" name="activated" [% IF ip_range.status == 1 %] checked="checked" [% END %]>
+                                    Active
+                                </label>
+                                <label><input type="radio" value="0" name="activated" [% IF ip_range.status == 0 %] checked="checked" [% END %]>
+                                    Inactive
+                                </label>
+                            </div>
+
+                            <input type="hidden" value="[% ip_range.to_ip %]" id="to_ip"  />
+                            <input type="hidden" value="" name="simulate_modal"/>
+                            <input type="hidden" value="" name="simulate_modal_edit"/>
+                        </div>
+
+                        <div class="center">
+                            <button class="btn" type="submit" name="submit_edit_ip_range_form" id="submit_add_user_form"><i class="icon icon-ok"></i> Save</button>
+                            &nbsp;or&nbsp;
+                            <a href="#" onclick="goBack();">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+var to_ip_value;
+function show_edit_modal() {
+
+    $('#overlay').fadeIn();
+    $('#manage_ips_edit_ip_range').fadeIn();
+    $('input[name=simulate_modal]').each(function() {
+        $(this).val(0);
+    });
+    $('input[name=simulate_modal_edit]').each(function() {
+        $(this).val(1);
+    });
+
+    to_ip_value = $('#to_ip').val();
+    var to_ip_bytes = to_ip_value.split('.');
+    $('#to_ip_class_edit').val( to_ip_bytes[0] + '.' + to_ip_bytes[1] + '.' + to_ip_bytes[2] );
+    $('#to_ip_last_byte_edit').val( to_ip_bytes[3] );
+
+}
+
+$('#cancel_manage_ips_edit_ip_range').on('click', function() {
+    $('#manage_ips_edit_ip_range').fadeOut();
+    $('#overlay').fadeOut();
+    $('input[name=simulate_modal_edit]').each(function() {
+        $(this).val(0);
+    });
+});
+
+/*$('#from_ip_edit').ipAddress();*/
+
+$('#to_ip_class_edit').val('xxx.xxx.xxx');
+$('#from_ip_edit').on('blur', function() {
+    var to_ip = $(this).val().split('.');
+    $('#to_ip_class_edit').val( to_ip[0] + '.' + to_ip[1] + '.' + to_ip[2] );
+});
+
+
+
+</script>

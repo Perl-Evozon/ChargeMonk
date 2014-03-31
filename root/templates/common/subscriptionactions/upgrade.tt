@@ -1,0 +1,95 @@
+[% WRAPPER $wrapper %]
+
+[% USE date(format = '%B %d, %Y') %]
+
+<div id="content-header">
+	<h1>
+		Upgrade Details
+	</h1>
+</div>
+
+[% INCLUDE include/common/alerts.tt %]
+
+
+<div class="container-fluid">
+	<form method="post" action="/common/subscriptionactions/upgrade_save/[% c.request.arguments.0 %]/[% c.request.arguments.1 %]">
+    <input type="hidden" value="[% new_subscription_id %]"  name="subscription"/>
+	 	 <div class="control-group">
+	 	 	<table id="upgrade_table" class="table">
+				<tr>
+					<td>
+						<b>Old subscription</b>
+					</td>
+					<td>
+						<b>New subscription</b>
+					</td>
+					<td>
+						<b>Remainder</b>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="user_info">
+							<label> Name: </label>
+							<label> [% current_subscription.subscription.name %] </label>
+						</div>
+						<div class="user_info">
+							<label> Start Date: </label>
+							<label> [% date.format(current_subscription.active_from_date) %] </label>
+						</div>
+						<div class="user_info">
+							<label> End Date: </label>
+							<label> [% date.format(current_subscription.active_to_date) %] </label>
+						</div>
+						<div class="user_info">
+							<label> Price: </label>
+							<label> [% current_subscription.subscription.price %] </label>
+						</div>
+					</td>
+					<td>
+						<div class="user_info">
+							<label> Name: </label>
+							<label> [% new_subscription_name %] </label>
+						</div>
+						<div class="user_info">
+							<label> Start Date: </label>
+							<label> [% date.format(new_subscription_start_date) %] </label>
+						</div>
+						<div class="user_info">
+							<label> End Date: </label>
+							<label> [% date.format(new_subscription_end_date) %] </label>
+						</div>
+						<div class="user_info">
+							<label> Price: </label>
+							<label> [% new_subscription_price %] </label>
+						</div>
+					</td>
+					<td>
+						<div class="user_info">&nbsp;</div>
+						<div class="user_info">
+							<label> Days remaining: </label>
+							<label> [% remaining_days %] </label>
+						</div>
+						<div class="user_info">
+							<label> Ammount remaining: </label>
+							<label> [% remaining_amount %] </label>
+						</div>
+						<div class="user_info">
+							<label> Final price: </label>
+							<label> [% final_price %] </label>
+						</div>
+					</td>
+				</tr>
+	 	 	</table>
+	 	 </div>
+			<div class="center">
+			 <button class="btn" type="submit" name="upgrade" value="save"><i class="icon icon-ok"></i> Next</button>
+			 &nbsp;or&nbsp;
+			 <a href="#" onclick="goBack();">Cancel</a>
+		 </div>
+
+  </form>
+</div>
+
+[% END %]
+

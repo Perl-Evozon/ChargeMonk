@@ -1,0 +1,1 @@
+ALTER TABLE "public".link_user_subscription DROP CONSTRAINT "link_user_subscription_subscription_id_fkey", ADD CONSTRAINT "link_user_subscription_subscription_id_fkey" FOREIGN KEY ("subscription_id") REFERENCES "public"."subscription" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;

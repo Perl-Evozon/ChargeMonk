@@ -1,0 +1,99 @@
+<link href="/static/css/uniform.css" rel="stylesheet">
+
+<div id="overlay">
+    <!-- this is used as an intermediate layer to display between page elements and the manage groups 'popup' -->
+</div>
+
+<div id="manage_ips_add_ip_range" class="manage_ips_add_ip_range">
+    <div id="popup" class="popup">
+        <div class="content icons-grey">
+            <i id='cancel_manage_ips_add_ip_range' class="icon icon-remove-circle icon-grey" style="float: right;margin-bottom: 15px;"></i>
+            [% IF simulate_modal %]
+                [% INCLUDE include/common/alerts.tt %]
+            [% END %]
+            <div class="container-fluid">
+                <div class="widget-box">
+                    <div class="widget-title">
+                            <h5>Add IP Range</h5>
+                    </div>
+                </div>
+
+                <div class="widget-content nopadding">
+                    <form method="post" id="manage_ips_add_ip_range_form">
+                        <div class="control-group">
+                            <label class="control-label">From IP:</label>
+                            <div class="controls">
+                                <input type="text" style="width:15%" id="from_ip" name="from_ip" maxlength="15"  required/>
+                            </div>
+
+                            <label class="control-label">To IP:</label>
+                            <div class="controls">
+                                <input type="text" style="width:9%" id="to_ip_class" name="to_ip_class" maxlength="12"  required readonly/> .
+                                <input type="text" style="width:3%" id="to_ip_last_byte" name="to_ip_last_byte" maxlength="3"  required/>
+                            </div>
+
+                            <div class="controls">
+                                <label ><input type="radio" value="1" name="activated" checked="checked"> Active </label>
+                                <label><input type="radio" value="0" name="activated"> Inactive </label>
+                            </div>
+
+                            <input type="hidden" value="" name="simulate_modal"/>
+                            <input type="hidden" value="" name="simulate_modal_edit"/>
+                        </div>
+
+                        <div class="center">
+                            <button class="btn" type="submit" name="submit_add_ip_range_form" id="submit_add_user_form"><i class="icon icon-ok"></i> Save</button>
+                            &nbsp;or&nbsp;
+                            <a href="#" onclick="goBack();">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+$(document).ready( function(){
+
+    $('#add_ip_range_btn').on('click', function( e ) {
+        $('#overlay').fadeIn();
+        $('#manage_ips_add_ip_range').fadeIn();
+
+        $('input[name=simulate_modal_edit]').each(function() {
+            $(this).val(0);
+        });
+        $('input[name=simulate_modal]').each(function() {
+            $(this).val(1);
+        });
+
+        // if real human click
+        if ( e.hasOwnProperty('originalEvent') ) {
+            // remove previous alerts
+            $('.span12 .alert').each(function() {
+                $(this).remove();
+            });
+        }
+    });
+
+    $('#cancel_manage_ips_add_ip_range').on('click', function() {
+        $('#manage_ips_add_ip_range').fadeOut();
+        $('#overlay').fadeOut();
+        $('input[name=simulate_modal]').each(function() {
+            $(this).val(0);
+        });
+    });
+
+/*    $('#from_ip').ipAddress(); */
+
+    $('#to_ip_class').val('xxx.xxx.xxx');
+    $('#from_ip').on('blur', function() {
+        var to_ip = $(this).val().split('.');
+        $('#to_ip_class').val( to_ip[0] + '.' + to_ip[1] + '.' + to_ip[2] );
+    });
+
+});
+
+</script>

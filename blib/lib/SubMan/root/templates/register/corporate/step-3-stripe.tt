@@ -1,0 +1,109 @@
+[% WRAPPER 'layouts/default.tt' %]
+
+<form id="payment-form" class="registration" method="post" autocomplete="off"
+        action="/register/corporate/step-4/[% c.request.arguments.0  %]/[% c.request.arguments.1  %]"
+        method="POST">
+    <span class="payment-errors"></span>
+    <input type="hidden" name="registration_token" value="[% c.request.param('token') %]" />
+    <div class="row cf">
+        <div class="cf pull-left">
+          <img class="pull-left" alt="" src="/static/img/stripe.png">
+        </div>
+        <div class="register-steps cf">
+            <div class="step">
+                <i>1</i>
+                <span>Personal Info</span>
+            </div>
+            <div class="step">
+                <i>2</i>
+                <span>Company Info</span>
+            </div>
+            <div class="step active">
+                <i>3</i>
+                <span>Credit Card Info</span>
+            </div>
+            <div class="step">
+                <i>4</i>
+                <span>Confirmation</span>
+            </div>
+        </div>
+    </div>
+    <div class="form-data">
+        <div class="form-row">
+            <label for="credit_card_name">Name on card:</label>
+            <input type="text" data-stripe="name" />
+        </div>
+        <div class="form-row">
+            <label for="credit_card_number">Card number:</label>
+            <input type="text" size="20" data-stripe="number" />
+        </div>
+        <div class="form-row">
+            <label for="credit_card_cvv2">CVC:</label>
+            <input type="text" size="4" data-stripe="cvc" />
+        </div>
+        <div class="form-row">
+            <label for="credit_card_expiration">Expiration date:</label>
+            <input type="text" size="2" style="width:136px;" data-stripe="exp-month" />
+                /
+						<input type="text" size="4" style="width:136px;" data-stripe="exp-year" />
+        </div>
+        <div class="form-row right">
+            <input type="submit" value="Continue" class="btn btn-primary" />
+        </div>
+    </div>
+    <div class="description">
+        <h1>Safe checkout</h1>
+        <p>
+             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+             vel fringilla elit. Praesent congue elit et lectus porttitor
+             vitae semper dui aliquam. Duis porta convallis sem at aliquam.
+        </p>
+        <p>
+             In nisl metus, interdum ac fermentum ac, dignissim quis nibh.
+             Vivamus pulvinar, arcu sit amet aliquet ultricies, nisl erat
+             rutrum arcu, ac blandit justo lorem quis quam.
+        </p>
+    </div>
+    <div class="spacer"></div>
+</form>
+
+<script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+<script type="text/javascript">
+  // This identifies your website in the createToken call below
+  Stripe.setPublishableKey('[% credentials.publishable_key %]');
+  
+    var stripeResponseHandler = function(status, response) {
+    var $form = $('#payment-form');
+     
+    if (response.error) {
+    // Show the errors on the form
+    $form.find('.payment-errors').text(response.error.message);
+    $form.find('button').prop('disabled', false);
+    } else {
+    // token contains id, last4, and card type
+    var token = response.id;
+    // Insert the token into the form so it gets submitted to the server
+    $form.append($('<input type="hidden" name="stripeToken" />').val(token));
+    // and re-submit
+    $form.get(0).submit();
+    }
+    };
+     
+    jQuery(function($) {
+    $('#payment-form').submit(function(e) {
+    var $form = $(this);
+     
+    // Disable the submit button to prevent repeated clicks
+    $form.find('button').prop('disabled', true);
+     
+    Stripe.createToken($form, stripeResponseHandler);
+     
+    // Prevent the form from submitting with the default action
+    return false;
+    });
+    });
+  // ...
+</script>
+
+
+[% END %]

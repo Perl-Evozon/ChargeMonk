@@ -1,0 +1,41 @@
+[% IF error %]
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h3>Login</h3>
+    </div>
+    <div class="modal-body" style="width:450px;">
+      <div class="alert alert-error">Username/password don't match</div>
+	  <div class="control-group">
+        <label class="control-label">Email:</label>
+        <div class="controls">
+            <input type='email' style="width:80%;" class = 'required enter' placeholder ="Username" name="email" id="mail">
+        </div> 
+      </div>
+      <div class="control-group">
+        <label class="control-label">Password:<a href="/forgot_password" tabindex="-1">(forgot password)</a></label>
+        <div class="controls">
+            <input type='password' style="width:80%;" class = 'required enter' placeholder = "Password" name="password" id="pass">
+        </div>
+        <div class="controls">
+          <label class="checkbox inline">
+            <input type="checkbox" id="remember" name="remember" value="remember"> Remember me
+          </label>
+        </div> 
+      </div>
+	  <div class="modal-footer">                       
+            <input class="btn btn-primary" id="button" type="button" value="Login" onclick="user_login();"/>
+            <a class="modal-close btn" data-dismiss="modal" href="%23">Cancel</a>    
+      </div>
+[% ELSE %]
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h3>Please wait...</h3>
+    </div>
+	<script type="text/javascript">
+    [% IF c.session.user.type == 'ADMIN' %]
+		document.location = "/admin/dashboard"
+    [% ELSE %]
+        document.location = "/user/home"
+    [% END %]
+	</script>
+[% END %]

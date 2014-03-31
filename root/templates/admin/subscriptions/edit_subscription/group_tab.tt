@@ -1,0 +1,80 @@
+<div id="add_subscr_group">
+    <label class="chargemonk_info_label">List of subscriptions in the group in the order they'll appear on the site.</label>
+    <div class="groups_div" id="groups_div" style="margin-top: 2%;">
+         [% IF reloaded_ordered_groups.size %]
+            [% FOREACH reloaded_group IN reloaded_ordered_groups %]
+                [% IF reloaded_group.current %]
+                    <input type="text" class="group_order_textbox" style="width: 50%; margin-top: 1%; color: rgba(82, 168, 236, 0.8);" name="selected_group_order" value="[%reloaded_group.subscription_name%]" readonly/>
+                    <i class="icon icon-circle-arrow-up tip-bottom" data-original-title="Move this subscription up in the list."></i>
+                [% ELSE %]
+                    <input type="text" class="group_order_textbox" style="width: 50%; margin-top: 1%;" name="selected_group_order" value="[%reloaded_group.subscription_name%]" readonly/>
+                    <i class="icon icon-circle-arrow-up tip-bottom" data-original-title="Move this subscription up in the list."></i>
+                [% END %]
+            [% END %]
+        [% ELSE %]
+            [% FOREACH subscription IN subscriptions.sort('position_in_group') %]
+                [% IF current_subscription.id == subscription.id %]
+                    <input type="text" class="group_order_textbox" style="width: 50%; margin-top: 1%;color: rgba(82, 168, 236, 0.8);" name="selected_group_order" value="... (this subscription)" readonly/>
+                    <i class="icon icon-circle-arrow-up tip-bottom" data-original-title="Move this subscription up in the list."></i>
+                [% ELSE %]
+                    <input type="text" class="group_order_textbox" style="width: 50%; margin-top: 1%;" name="selected_group_order" value="[% subscription.name %]" readonly/>
+                    <i class="icon icon-circle-arrow-up tip-bottom" data-original-title="Move this subscription up in the list."></i>
+                [% END %]
+            [% END %]
+            [% IF current_group != current_subscription.subscription_group.name %]
+                <input type="text" class="group_order_textbox" style="width: 50%; margin-top: 1%;color: rgba(82, 168, 236, 0.8);" name="selected_group_order" value="... (this subscription)" readonly/>
+                <i class="icon icon-circle-arrow-up tip-bottom" data-original-title="Move this subscription up in the list."></i>
+            [% END %]
+        [% END %]
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('.icon').each(function() {
+        $(this).css('margin-top', '1%');
+    });
+
+    $('.icon-circle-arrow-up:first').removeAttr('data-original-title');
+    $('.icon-circle-arrow-up:first').removeClass('icon');
+    $('.icon-circle-arrow-up:first').addClass('icon-grey');
+
+    // move subscription up in the list
+    $(".icon-circle-arrow-up").on('click', function(){
+        var icon_index = $(this).index();
+        var current_index = 0;
+        var previous_index = 0;
+
+        $('.group_order_textbox').each(function() {
+            if ( $(this).index() < icon_index ) {
+                current_index = $(this).index();
+            } else {
+                return (false); // do not loop further
+            };
+            if ( $(this).index() < icon_index-2 ) {
+                previous_index = $(this).index();
+            }
+        });
+
+        if ( current_index > previous_index ) {
+            // switch values
+            var change = $('#groups_div *').eq(current_index).val();
+            $('#groups_div *').eq(current_index).fadeOut(200, function() {
+                $('#groups_div *').eq(current_index).val( $('#groups_div *').eq(previous_index).val() );
+                $('#groups_div *').eq(current_index).css( 'color', 'black' );
+                $('#groups_div *').eq(current_index).fadeIn(200);
+            });
+            $('#groups_div *').eq(previous_index).fadeOut(200, function() {
+                $('#groups_div *').eq(previous_index).val( change );
+                $('#groups_div input').each(function() {
+                    $(this).css('color', 'black');
+                    if ( $(this).val() == '... (this subscription)' ) {
+                        $(this).css('color', 'rgba(82, 168, 236, 0.8)');
+                    }
+                });
+                $('#groups_div *').eq(previous_index).fadeIn(200);
+            });
+        }
+    });
+});
+</script>

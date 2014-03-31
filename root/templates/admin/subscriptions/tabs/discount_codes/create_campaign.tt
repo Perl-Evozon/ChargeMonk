@@ -1,0 +1,143 @@
+
+<div id="create_campaign" class="create_campaign">
+    <div id="popup" class="popup">
+        <div class="content icons-grey">
+            <i class="cancel_create_campaign icon icon-remove-circle icon-grey" style="float: right;margin-bottom: 15px;"></i>
+            [% IF simulate_modal_campaign %]
+                [% INCLUDE include/common/alerts.tt %]
+            [% END %]
+            <div class="container-fluid">
+                <div class="widget-box">
+                    <div class="widget-title">
+                            <h5>Create campaign</h5>
+                    </div>
+                </div>
+
+                <div class="widget-content nopadding">
+                    <form action="#" method="post" id="create_campaign_form">
+                        <div class="control-group">
+                            <label class="control-label">Campaign name:</label>
+                            <div class="controls">
+                                <input type="text" class="form-control" id="campaign_name" name="name" maxlength="15"  required/>
+                            </div>
+
+                            <label class="control-label">Number of codes:</label>
+                            <div class="controls">
+                                <input type="number" class="form-control" id="nr_of_codes" name="nr_of_codes" maxlength="3"  required/>
+                            </div>
+
+                            <label class="control-label">Prefix:</label>
+                            <div class="controls">
+                                <input type="text" class="form-control" id="prefix" name="prefix" maxlength="4"  required/>
+                            </div>
+
+                            <label class="control-label">Start date:</label>
+                            <div class="controls">
+                                <input type="text" class="form-control" id="start_date" name="start_date" maxlength="4"  required/>
+                            </div>
+
+                            <label class="control-label">End date:</label>
+                            <div class="controls">
+                                <input type="text" class="form-control" id="end_date" name="end_date" maxlength="4"  required/>
+                            </div>
+
+                            <label class="control-label">Discount type:</label>
+                            <div class="controls">
+                                <select id="discount_type" style="width: 100%;" name="discount_type">
+                                    <option value="unit">Unit</option>
+                                    <option value="percent">Percent</option>
+                                </select>
+                            </div>
+
+                            <label class="control-label">Discount amount:</label>
+                            <div class="controls">
+                                <input type="number" class="form-control" id="discount_amount" name="discount_amount" maxlength="3"  required/>
+                            </div>
+
+                            <label class="control-label">Valid until:</label>
+                            <div class="controls">
+                                <input type="text" class="form-control" id="valability" name="valability" maxlength="4"  required/>
+                            </div>
+
+                            <input type="hidden" value="" name="simulate_modal"/>
+                            <input type="hidden" value="" name="simulate_modal_campaign"/>
+                        </div>
+
+                        <div class="center">
+                            <button class="btn" type="submit" name="submit_create_campaign_form" id="submit_create_campaign_form">
+                                <i class="icon icon-ok"></i> Save
+                            </button>
+                            &nbsp;or&nbsp;
+                            <a href="#" class="cancel_create_campaign">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+$(document).ready( function(){
+
+    $('.cancel_create_campaign').on('click', function() {
+        $('#create_campaign').fadeOut();
+        $('#overlay').fadeOut();
+        $('input[name=simulate_modal]').each(function() {
+            $(this).val(0);
+        });
+    });
+
+    $('#start_date').datepicker({
+        format: "MM dd, yyyy",
+        weekStart: 1,
+        startDate: "today",
+        autoclose: true
+    });
+    $('#end_date').datepicker({
+        format: "MM dd, yyyy",
+        weekStart: 1,
+        startDate: "today",
+        autoclose: true
+    });
+    $('#valability').datepicker({
+        format: "MM dd, yyyy",
+        weekStart: 1,
+        startDate: "today",
+        autoclose: true
+    });
+
+    $('#end_date').change(function(){
+        $('#start_date').datepicker('setEndDate', $('#end_date').val());
+    });
+    $('#start_date').change(function(){
+        $('#end_date').datepicker('setStartDate', ($('#start_date').val() || 'today'));
+    });
+
+    $('#create_campaign_form').on('submit', function() {
+        var campaign_name = $('#campaign_name').val();
+        $.post("/admin/subscriptions/tabs/discount_codes/"+[% subscription_id %], {
+            name:           $('#campaign_name').val(),
+            prefix:         $('#prefix').val(),
+            nr_of_codes:    $('#nr_of_codes').val(),
+            start_date:     $('#start_date').val(),
+            end_date:       $('#end_date').val(),
+            discount_type:  $('#discount_type').val(),
+            discount_amount:$('#discount_amount').val(),
+            valability:     $('#valability').val(),
+            added_campaigns:$("#added_campaigns").val(),
+            create_campaign_form: 1
+        }, function(data, textStatus, xhr) {
+            var added_id = $(data).find('#campaigns').find('option:contains(" '+campaign_name+' ")');
+            $('#discount_codes').html(data);
+            $('#overlay').fadeOut();
+            $("#added_campaigns").val($("#added_campaigns").val() + ',' + added_id.val());
+            $(added_id).attr('selected', 'selected');
+        });
+        return false;
+    });
+});
+
+</script>

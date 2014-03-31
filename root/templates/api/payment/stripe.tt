@@ -1,0 +1,132 @@
+[% USE date;
+   current_date = date.format( date.now, '%Y-%m-%d' ).split('-');
+%]
+
+<form id="stripe-payment-form" class="registration">
+    <input type="hidden" name="link_user_subscription" value="[% link_user_subscription %]" />
+    
+    <div class="row cf">
+        <div class="cf pull-left">
+          <img class="pull-left" alt="" src="/static/img/stripe.png">
+        </div>
+        <div class="register-steps cf">
+            <div class="step">
+                <i>1</i>
+                <span>Personal Info</span>
+            </div>
+            <div class="step active">
+                <i>2</i>
+                <span>Credit Card Info</span>
+            </div>
+        </div>
+    </div> 
+    
+    <div class="form-data">
+        <div class="form-row">
+            <label for="credit_card_name">Name on card:</label>
+            <input id="name" type="text" data-stripe="name" />
+        </div>
+        <div class="form-row">
+            <label for="credit_card_number">Card number:</label>
+            <input id="number" type="text" size="20" data-stripe="number" />
+        </div>
+        <div class="form-row">
+            <label for="credit_card_cvv2">CVV:</label>
+            <input id="cvv" type="text" size="4" data-stripe="cvc" />
+        </div>
+        <div class="form-row">
+            <label for="credit_card_expiration">Expiration date(mm/yyyy):</label>
+            <select id="month" data-stripe="exp-month" style="width:136px;">
+            [% FOREACH month_number IN [ '01' .. '12' ] %]
+                <option value="[%month_number%]">[%month_number%]</option>
+            [% END %]
+            </select>
+            /
+            <select id="year" data-stripe="exp-year" style="width:165px;">
+            [% FOREACH year_number IN [ current_date.0 .. 2100  ] %]
+                <option value="[%year_number%]">[%year_number%]</option>
+            [% END %]
+            </select>
+        </div>
+        <div class="form-row right">
+            <button id="submit_stripe" class="btn btn-success">Confirm</button>
+        </div>
+    </div>
+
+    <div class="spacer"></div>
+</form>
+<script type="text/javascript">
+  // This identifies your website in the createToken call below
+    Stripe.setPublishableKey('[% gateway_credentials.publishable_key %]');
+    var $form = $('#stripe-payment-form'); 
+    var stripeResponseHandler = function(status, response) {
+        var $form = $('#payment-form');
+         
+        if (response.error) {
+        // Show the errors on the form
+
+        var error_message = '<div class="alert alert-warning">' +
+                            '<button type="button" class="close" data-dismiss="alert">&times;</button>' +                        
+                            response.error.message +
+                            '</div>';
+        $('.alert-warning').remove();
+        $(error_message).insertBefore('#stripe-payment-form');
+        $form.find('button').prop('disabled', false);
+        return false;
+        } else {
+        // token contains id, last4, and card type
+        var token = response.id;
+        // Insert the token into the form so it gets submitted to the server
+        $form.append($('<input type="hidden" name="stripeToken" />').val(token));
+        
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: '/api/subscriptions/payment',
+            dataType: 'json',
+            data: $form.serialize(),
+            success: function(response, textStatus, jqXHR){
+                if ( response.success ) {
+                    generate_alert('success', response.success);
+                    window.location = "[%finish_register_page%]";
+                } else {
+                    generate_alert('error', response.error);
+                }
+            },
+            error: function(response, textStatus, jqXHR) {
+                generate_alert('error', 'There has been an error while processing the data. Please contact support');
+            }
+        })
+        
+        }
+    };
+    
+    $('#submit_stripe').on('click', function(e){
+        e.preventDefault();
+        var current_month = "[%current_date.1%]";
+        if ( !$('#name').val() ) {
+            generate_alert( 'error_name', 'Name field can not be empty' );
+            return false;
+        } else if ( !$('#number').val() || !$.isNumeric( $('#number').val() ) || $('#number').val().toString().length !== 16 ) {
+            generate_alert( 'error_number','Card number appears to be invalid. The number should be composed of 16 digits, no spaces: "xxxxxxxxxxxxxxxx"' );
+            return false;
+        } else if ( !$('#cvv').val() || !$.isNumeric( $('#cvv').val() ) || $('#cvv').val().toString().length !== 3 ) {
+            generate_alert( 'error_cvv', 'CVV code appears to be invalid. The code should be composed of 3 digits ussaly marked on the back of the card' );
+            return false;
+        } else if ( parseInt($('#month option :selected').val()) < parseInt(current_month) ) {
+            generate_alert( 'error_month', 'Expiration date can not be earlier than current date' );
+            return false;
+        }
+        Stripe.createToken($form, stripeResponseHandler);
+    });
+  
+    function generate_alert(type, alert_text) {
+        $(".alert").remove();
+        
+        var alert = '<div class="alert alert-'+ type +' fade in" data-alert="alert">'+ alert_text +' <button type="button" class="close" data-dismiss="alert">&times;</button> </div>';
+        $(alert).insertBefore('#stripe-payment-form');
+    
+        return true;
+    }
+    
+</script>

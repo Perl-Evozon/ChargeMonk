@@ -1,0 +1,41 @@
+<div class="container">
+  <div class="row">
+    <div class="span12">
+      [% IF c.session.error_messages && c.session.error_messages.size %]
+          <div id="error-messages" class="error-messages">
+          [% FOREACH error IN c.session.error_messages %]
+              <div class="alert alert-error" >
+                  <a class="close" data-dismiss="alert">×</a>
+                  <h4>[% error %]</h4>
+              </div>
+          [% END %]
+          </div>
+          [% c.session.delete( 'error_messages' ) %]
+      [% END %]
+      [% IF c.session.notice_messages && c.session.notice_messages.size %]
+          <div id="alert-messages">
+          [% FOREACH notice IN c.session.notice_messages %]
+              <div class="alert alert-info">
+                  <a class="close" data-dismiss="alert">×</a>
+                  <h4>[% notice %]</h4>
+              </div>
+          [% END %]
+          [% c.session.delete( 'notice_messages' ) %]
+          </div>
+      [% END %]      
+      [% IF c.session.success_messages && c.session.success_messages.size %]
+        [% IF !c.session.error_messages && !c.session.error_messages.size %]
+          <div id="success-messages">
+          [% FOREACH success IN c.session.success_messages %]
+              <div class="alert alert-success">
+                  <a class="close" data-dismiss="alert">×</a>
+                  <h4>[% success %]</h4>
+              </div>
+          [% END %]
+          </div>
+          [% END %]
+          [% c.session.delete( 'success_messages' ) %]
+      [% END %]
+    </div>
+  </div>
+</div>

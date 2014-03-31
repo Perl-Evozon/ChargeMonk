@@ -1,0 +1,105 @@
+<div id="add_subscr_features">
+    <label class="control-label">Everything that is on: </label>
+    <div class="controls">
+        <select id='import_features_from_subscr' name='import_features_from_subscr' style="width: 50%">
+            [% IF subscriptions.size %]
+                <option value=""> Select Subscription ... </option>
+                [% FOREACH subscription IN subscriptions.sort('position_in_group') %]
+                    <option value="[% subscription.id %]"> [% subscription.name %] </option>
+                [% END %]
+            [% ELSE %]
+                <option value=""> NA </option>
+            [% END %]
+        </select>
+        <span class="display_sign"> + </span>
+    </div>
+    <label class="subman_info_label">Select the subscription features in the order you would want them to appear.</label>
+    <div class="features_div">
+        <select multiple name="selected_features" id="selected_features">
+                [% FOREACH feature IN features.sort('name') %]
+                    <option value="[% feature.id %]"
+                    [% IF current_features_ids.grep("$feature.id").size %]selected[% END %]>
+                        [% feature.name %]
+                    </option>
+                [% END %]
+        </select>
+        <span id="plus_feature" class="display_sign"> + </span>
+    </div>
+</div>
+
+<script>
+$(document).ready( function () {
+
+    $('#import_features_from_subscr').parent().on('change', function(){
+        var already_exists = 0;
+        var subscr_features = new Array();
+        var new_text = $(this).find('span').text();
+        new_text = new_text.slice(1, -4);
+        
+        // reset select2
+        $('#s2id_selected_features').select2("val", "");
+        // remove old features set automatically when features for subscription were imported
+        $('#s2id_selected_features .select2-search-choice').each(function(){
+            $(this).remove();
+        });
+        
+        // make all features available for select
+        [% FOREACH feat IN features %]
+            already_exists = 0;
+            $('select[name=selected_features] option').each(function(){
+                if ( $(this).text() == ' [% feat.name %] ' ) {
+                    already_exists = 1;
+                } else if ( ( $(this).text() > " [% feat.name %] " ) && ( already_exists == 0 ) ) {
+                    // we need to add this feature prior to the current one
+                    $(this).before('<option value="[% feat.id %]"> [% feat.name %] </option>');
+                    already_exists = 1;
+                };
+            });
+        [% END %]
+        
+        // load features for selected subscription
+        if ( new_text.indexOf('Select Subscription') === -1 ) {
+            [% FOREACH subscr IN subscriptions %]
+                if ( '[% subscr.name %]' == new_text ) {
+                    [% FOREACH link IN link_subscriptions_features %]
+                        [% IF ( link.subscription_id == subscr.id ) %]
+                            subscr_features.push([% link.feature_id %]);
+                        [% END %]
+                    [% END %]
+                }
+            [% END %]
+            for ( i=0;i<subscr_features.length;i++ ) {
+                [% FOREACH f IN features %]
+                    if( '[% f.id %]' == subscr_features[i] ) {
+                        $('#s2id_selected_features .select2-search-field').before('<li class="select2-search-choice"><div> [% f.name %] </div></li>');
+                        $('select[name=selected_features] option').each(function(){
+                            if ( $(this).text() == ' [% f.name %] ' ) {
+                                $(this).remove();
+                                return false; // do not loop any more
+                            };
+                        });
+                    }
+                [% END %]
+            }
+        }
+        
+        // relocate the '+' sign
+        relocate_plus_sign();
+    });
+});
+
+$('#selected_features, s2id_import_features_from_subscr a span').on('change', relocate_plus_sign);
+
+function relocate_plus_sign() {
+    var position = $('#selected_features').parent().find('li[class=select2-search-field]').position();
+    var top_coord = position.top + 15;
+
+    $('#plus_feature').css('top', top_coord + 'px');
+}
+
+$('#plus_feature').on('click', function(){
+    $('#selected_features').parent().find('li[class=select2-search-field]').find('input').trigger('focus');
+});
+
+</script>
+

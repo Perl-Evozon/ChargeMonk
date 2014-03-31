@@ -1,0 +1,59 @@
+[% WRAPPER 'layouts/default.tt' %]
+
+<form class="registration" method="post" autocomplete="off"
+    action="/register/individual/step-3/[% c.request.arguments.0  %]/[% c.request.arguments.1  %]">
+    <input type="hidden" name="registration_token" value="[% c.request.param('token') %]" />
+    <div class="row cf">
+        <div class="register-steps cf">
+            <div class="step">
+                <i>1</i>
+                <span>Personal Info</span>
+            </div>
+            <div class="step active">
+                <i>2</i>
+                <span>Credit Card Info</span>
+            </div>
+            <div class="step">
+                <i>3</i>
+                <span>Confirmation</span>
+            </div>
+        </div>
+    </div>
+    <div class="form-data">
+        <div class="form-row">
+            <label for="credit_card_name">Name on card:</label>
+            <input type="text" id="credit_card_name" name="credit_card_name" />
+        </div>
+        <div class="form-row">
+            <label for="credit_card_number">Card number:</label>
+            <input type="text" id="credit_card_number" name="credit_card_number" />
+        </div>
+        <div class="form-row">
+            <label for="credit_card_cvv2">CVV2:</label>
+            <input type="text" id="credit_card_cvv2" name="credit_card_cvv2" />
+        </div>
+        <div class="form-row">
+            <label for="credit_card_expiration">Expiration date:</label>
+            <input type="text" id="credit_card_expiration" name="credit_card_expiration" />
+        </div>
+        <div class="form-row right">
+            <input type="submit" value="Continue" class="btn btn-primary" />
+        </div>
+    </div>
+    <div class="description">
+        <h1>Safe checkout</h1>
+        <p>
+             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+             vel fringilla elit. Praesent congue elit et lectus porttitor
+             vitae semper dui aliquam. Duis porta convallis sem at aliquam.
+        </p>
+        <p>
+             In nisl metus, interdum ac fermentum ac, dignissim quis nibh.
+             Vivamus pulvinar, arcu sit amet aliquet ultricies, nisl erat
+             rutrum arcu, ac blandit justo lorem quis quam.
+        </p>
+    </div>
+    <div class="spacer"></div>
+</form>
+
+[% END %]
